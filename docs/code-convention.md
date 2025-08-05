@@ -34,6 +34,9 @@
 - 계산이 복잡한 내용이 있을 경우 매 줄마다 주석을 달아서 이해하기 쉽게 한다.
 - jpaRepository 등 database에서 result를 조회해오는 경우 반드시 DTO 클래스를 생성하여 해당 클래스로 필요한 필드/로우들을 조회한다.
 - 복잡한 쿼리의 경우  jpql로 join fetch 하여 entity를 반환한다. 이후 entity는 서비스단에서 DTO class로 변환하여 controller로 반환한다. 
+- DTO로 생성할때는 내부 클래스 형태로 만들지 말고 개별적으로 각각 생성할 것.
+- DTO에서 postfix가 No로 끝나는 것은 반환 시 Long에서 String, 요청 시 String을 Long으로 받을 수 있도록 처리해줘.
+ex) @JsonSerialize(using = ToStringSerializer.class)
 - querydsl은 절대 사용하지 않는다.
 
 # swagger
