@@ -76,7 +76,7 @@ CREATE TABLE `Question` (
   `note` VARCHAR(255) NULL
 );
 
-CREATE TABLE `competitor` (
+CREATE TABLE `Competitor` (
   -- 경쟁사 번호 (Primary Key)
   `competitorNo` BIGINT NOT NULL Primary Key,
   -- 분석 결과 번호 (FK → AnalysisResult.analysisResultNo)

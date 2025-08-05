@@ -1,1 +1,10 @@
+현재 entity 및 rest-api문서에 맞는 Controller가 모두 생성되었다. 
+rest-api 문서, ddl, 코드컨벤션 문서를보고 service, repository 및 기타작업을 모두 완수하라.
 
+rest-api 문서로 구성해야할 Controller명과 method명을 목록화 한뒤 단계별로 실행해줘
+
+##참고
+메인 화면 api : /docs/rest-api/main-rest-api.md
+결과지 화면 api : /docs/rest-api/result-rest-api.md
+ddl : /docs/db-ddl.md
+코드 컨벤션 : /docs/code-convention.md
