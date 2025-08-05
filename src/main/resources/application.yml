@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: reportly-api
+
+  # Active profile (dev/prod)
+  profiles:
+    active: local
+
+  # H2 Database Configuration (Development)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  datasource:
+    url: jdbc:mysql://database-h-infinite-power.cxsewiog63mk.ap-southeast-2.rds.amazonaws.com:3306/reportly?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: admin
+    password: h-infinite-power
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+      hibernate:
+        ddl-auto: validate
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+
+  logging:
+    level:
+      com.example.testapi: DEBUG
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Swagger / OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
