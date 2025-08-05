@@ -1,6 +1,8 @@
 package com.human.infinite.power.reportly.domain.company.controller;
 
 import com.human.infinite.power.reportly.domain.company.dto.CompanyResponseDto;
+import com.human.infinite.power.reportly.domain.company.service.CompanyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +15,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/reportly-api/companies")
+@RequiredArgsConstructor
 public class CompanyController {
+
+    private final CompanyService companyService;
 
     /**
      * 브랜드 목록을 조회합니다.
@@ -23,7 +28,7 @@ public class CompanyController {
      */
     @GetMapping
     public ResponseEntity<List<CompanyResponseDto>> getAllCompanies() {
-        // TODO: service 호출
-        return ResponseEntity.ok(null);
+        List<CompanyResponseDto> companies = companyService.getAllCompanies();
+        return ResponseEntity.ok(companies);
     }
 }

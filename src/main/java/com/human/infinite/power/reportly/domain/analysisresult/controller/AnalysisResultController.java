@@ -1,6 +1,8 @@
 package com.human.infinite.power.reportly.domain.analysisresult.controller;
 
 import com.human.infinite.power.reportly.domain.analysisresult.dto.*;
+import com.human.infinite.power.reportly.domain.analysisresult.service.AnalysisResultService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +13,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/reportly-api/analysis-results")
+@RequiredArgsConstructor
 public class AnalysisResultController {
+
+    private final AnalysisResultService analysisResultService;
 
     /**
      * 분석결과를 생성합니다.
@@ -23,8 +28,8 @@ public class AnalysisResultController {
     @PostMapping
     public ResponseEntity<AnalysisResultCreateResponseDto> createAnalysisResult(
             @RequestBody AnalysisResultCreateRequestDto requestDto) {
-        // TODO: service 호출
-        return ResponseEntity.ok(null);
+        AnalysisResultCreateResponseDto response = analysisResultService.createAnalysisResult(requestDto);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -35,8 +40,8 @@ public class AnalysisResultController {
      */
     @GetMapping("/total-score-list")
     public ResponseEntity<TotalScoreListResponseDto> getTotalScoreList() {
-        // TODO: service 호출
-        return ResponseEntity.ok(null);
+        TotalScoreListResponseDto response = analysisResultService.getTotalScoreList();
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -49,8 +54,9 @@ public class AnalysisResultController {
     @GetMapping("/{analysisResultId}/analysis-result-score-statistics")
     public ResponseEntity<AnalysisResultScoreStatisticsResponseDto> getAnalysisResultScoreStatistics(
             @PathVariable("analysisResultId") Long analysisResultId) {
-        // TODO: service 호출
-        return ResponseEntity.ok(null);
+        AnalysisResultScoreStatisticsResponseDto response = 
+                analysisResultService.getAnalysisResultScoreStatistics(analysisResultId);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -65,8 +71,9 @@ public class AnalysisResultController {
     public ResponseEntity<List<AnalysisResultScoreResponseDto>> getAnalysisResultScores(
             @PathVariable("analysisResultId") Long analysisResultId,
             @RequestParam("companyNo") Long companyNo) {
-        // TODO: service 호출
-        return ResponseEntity.ok(null);
+        List<AnalysisResultScoreResponseDto> response = 
+                analysisResultService.getAnalysisResultScores(analysisResultId, companyNo);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -79,7 +86,8 @@ public class AnalysisResultController {
     @GetMapping("/{analysisResultId}")
     public ResponseEntity<AnalysisResultDetailResponseDto> getAnalysisResultDetail(
             @PathVariable("analysisResultId") Long analysisResultId) {
-        // TODO: service 호출
-        return ResponseEntity.ok(null);
+        AnalysisResultDetailResponseDto response = 
+                analysisResultService.getAnalysisResultDetail(analysisResultId);
+        return ResponseEntity.ok(response);
     }
 }

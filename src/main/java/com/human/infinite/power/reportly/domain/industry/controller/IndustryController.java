@@ -1,6 +1,8 @@
 package com.human.infinite.power.reportly.domain.industry.controller;
 
 import com.human.infinite.power.reportly.domain.industry.dto.IndustryResponseDto;
+import com.human.infinite.power.reportly.domain.industry.service.IndustryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +15,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/reportly-api/industries")
+@RequiredArgsConstructor
 public class IndustryController {
+
+    private final IndustryService industryService;
 
     /**
      * 업종 목록을 조회합니다.
@@ -23,7 +28,7 @@ public class IndustryController {
      */
     @GetMapping
     public ResponseEntity<List<IndustryResponseDto>> getAllIndustries() {
-        // TODO: service 호출
-        return ResponseEntity.ok(null);
+        List<IndustryResponseDto> industries = industryService.getAllIndustries();
+        return ResponseEntity.ok(industries);
     }
 }
