@@ -191,7 +191,7 @@ public class AnalysisResultService {
      *
      * @return 종합 점수 목록 DTO
      */
-    public TotalScoreListResponseDto getTotalScoreList() {
+    public TotalScoreListResponseDto getTotalScoreList(Long analysisResultId) {
         // TODO: 실제 데이터베이스에서 조회하는 로직으로 대체
         // 현재는 더미 데이터 반환
         return new TotalScoreListResponseDto(

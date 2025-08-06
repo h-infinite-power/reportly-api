@@ -38,9 +38,9 @@ public class AnalysisResultController {
      *
      * @return 종합 점수 목록
      */
-    @GetMapping("/total-score-list")
-    public ResponseEntity<TotalScoreListResponseDto> getTotalScoreList() {
-        TotalScoreListResponseDto response = analysisResultService.getTotalScoreList();
+    @GetMapping("/{analysisResultId}/total-score-list")
+    public ResponseEntity<TotalScoreListResponseDto> getTotalScoreList(@PathVariable("analysisResultId") Long analysisResultId) {
+        TotalScoreListResponseDto response = analysisResultService.getTotalScoreList(analysisResultId);
         return ResponseEntity.ok(response);
     }
 
