@@ -3,6 +3,7 @@ package com.human.infinite.power.reportly.domain.job.service;
 import com.human.infinite.power.reportly.common.dto.NoResponseDto;
 import com.human.infinite.power.reportly.common.exception.UserException;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.AnalysisResultCreateRequestDto;
+import com.human.infinite.power.reportly.domain.job.dto.TotalScoreListResponseDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.CategoryResultDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.InsightSummaryDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.PromptResponseDto;
@@ -25,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 업무 관련 비즈니스 로직을 처리하는 서비스 클래스
@@ -211,6 +214,71 @@ public class JobService {
                 keywordRepository.save(keywordEntity);
             }
         }
+    }
+
+    /**
+     * 종합 점수 목록을 조회합니다.
+     * 경쟁사와 우리 회사의 절대 점수를 비교한 데이터를 반환합니다.
+     *
+     * @param jobNo 작업 번호
+     * @return 종합 점수 목록 응답 DTO
+     */
+    public TotalScoreListResponseDto getTotalScoreList(Long jobNo) {
+        // Job 존재 여부 확인
+        Job job = jobRepository.findById(jobNo)
+                .orElseThrow(() -> new UserException("분석결과를 찾을 수 없습니다."));
+        
+        // 해당 Job에 연결된 모든 AnalysisResult 조회
+        List<AnalysisResultJob> analysisResultJobs = analysisResultJobRepository.findByJobNo(jobNo);
+        
+        if (analysisResultJobs.isEmpty()) {
+            throw new UserException("분석결과를 찾을 수 없습니다.");
+        }
+        
+        // AnalysisResult 목록 조회
+        List<Long> analysisResultNos = analysisResultJobs.stream()
+                .map(AnalysisResultJob::getAnalysisResultNo)
+                .collect(Collectors.toList());
+        
+        List<AnalysisResult> analysisResults = analysisResultRepository.findAllById(analysisResultNos);
+        
+        // 타겟 회사 (Job의 analysisResultNo와 일치하는 것)
+        AnalysisResult targetResult = analysisResults.stream()
+                .filter(result -> result.getAnalysisResultNo().equals(job.getAnalysisResultNo()))
+                .findFirst()
+                .orElseThrow(() -> new UserException("타겟 회사 분석결과를 찾을 수 없습니다."));
+        
+        // 경쟁사들 (타겟 회사 제외)
+        List<AnalysisResult> competitorResults = analysisResults.stream()
+                .filter(result -> !result.getAnalysisResultNo().equals(job.getAnalysisResultNo()))
+                .collect(Collectors.toList());
+        
+        // 모든 회사 점수로 순위 계산
+        List<AnalysisResult> allResults = new ArrayList<>(analysisResults);
+        allResults.sort(Comparator.comparing(AnalysisResult::getCompanyIndustryTotalScore).reversed());
+        
+        // 타겟 회사 순위 찾기
+        int targetRank = 1;
+        for (int i = 0; i < allResults.size(); i++) {
+            if (allResults.get(i).getAnalysisResultNo().equals(targetResult.getAnalysisResultNo())) {
+                targetRank = i + 1;
+                break;
+            }
+        }
+        
+        // 경쟁사 평균 점수 계산
+        double competitorAvgScore = competitorResults.stream()
+                .mapToDouble(AnalysisResult::getCompanyIndustryTotalScore)
+                .average()
+                .orElse(0.0);
+        
+        return new TotalScoreListResponseDto(
+                targetRank,
+                targetResult.getCompanyNo(),
+                targetResult.getCompanyIndustryTotalScore(),
+                competitorAvgScore,
+                allResults.size()
+        );
     }
 
     /**
