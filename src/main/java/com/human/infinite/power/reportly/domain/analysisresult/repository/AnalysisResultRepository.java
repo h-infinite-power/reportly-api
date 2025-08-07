@@ -27,14 +27,13 @@ public interface AnalysisResultRepository extends JpaRepository<AnalysisResult, 
     boolean existsByCompanyNoAndIndustryNoAndDate(Long companyNo, Long industryNo, LocalDate date);
     
     /**
-     * 회사번호, 업종번호, 날짜로 분석결과를 조회합니다.
+     * 회사번호, 업종번호로 최신순으로 분석결과를 조회합니다.
      * 
      * @param companyNo 회사 번호
      * @param industryNo 업종 번호
-     * @param date 분석 일자
      * @return 분석결과
      */
-    Optional<AnalysisResult> findByCompanyNoAndIndustryNoAndDate(Long companyNo, Long industryNo, LocalDate date);
+    List<AnalysisResult> findByCompanyNoAndIndustryNoOrderByCreatedAtDesc(Long companyNo, Long industryNo);
     
     /**
      * 분석결과번호로 회사와 업종 정보를 함께 조회합니다.
