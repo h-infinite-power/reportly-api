@@ -13,6 +13,10 @@ import java.util.List;
  */
 @Repository
 public interface AnalysisResultScoreRepository extends JpaRepository<AnalysisResultScore, Long> {
+
+    List<AnalysisResultScore> findByAnalysisResultNo(Long analysisResultNo);
+
+    List<AnalysisResultScore> findAllByAnalysisResultNoIn(List<Long> analysisResultNos);
     
     /**
      * 분석결과 번호로 카테고리별 점수를 카테고리와 함께 조회합니다.

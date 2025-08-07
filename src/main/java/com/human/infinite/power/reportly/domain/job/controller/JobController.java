@@ -3,6 +3,7 @@ package com.human.infinite.power.reportly.domain.job.controller;
 import com.human.infinite.power.reportly.common.dto.NoResponseDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.AnalysisResultCreateRequestDto;
 import com.human.infinite.power.reportly.domain.job.dto.TotalScoreListResponseDto;
+import com.human.infinite.power.reportly.domain.job.dto.AnalysisResultScoreStatisticsResponseDto;
 import com.human.infinite.power.reportly.domain.job.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,19 @@ public class JobController {
     @GetMapping("/{jobNo}/total-score-list")
     public ResponseEntity<TotalScoreListResponseDto> getTotalScoreList(@PathVariable("jobNo") Long jobNo) {
         TotalScoreListResponseDto response = jobService.getTotalScoreList(jobNo);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 분석결과 점수 통계를 조회합니다.
+     * 경쟁사 및 타겟 회사의 카테고리별 평균 점수 통계 데이터를 반환합니다.
+     *
+     * @param jobNo 작업 번호
+     * @return 분석결과 점수 통계
+     */
+    @GetMapping("/{jobNo}/analysis-result-score-statistics")
+    public ResponseEntity<AnalysisResultScoreStatisticsResponseDto> getAnalysisResultScoreStatistics(@PathVariable("jobNo") Long jobNo) {
+        AnalysisResultScoreStatisticsResponseDto response = jobService.getAnalysisResultScoreStatistics(jobNo);
         return ResponseEntity.ok(response);
     }
 }

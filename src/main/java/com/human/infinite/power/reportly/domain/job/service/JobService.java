@@ -4,6 +4,8 @@ import com.human.infinite.power.reportly.common.dto.NoResponseDto;
 import com.human.infinite.power.reportly.common.exception.UserException;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.AnalysisResultCreateRequestDto;
 import com.human.infinite.power.reportly.domain.job.dto.TotalScoreListResponseDto;
+import com.human.infinite.power.reportly.domain.job.dto.AnalysisResultScoreStatisticsResponseDto;
+import com.human.infinite.power.reportly.domain.job.dto.CategoryScoreDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.CategoryResultDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.InsightSummaryDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.PromptResponseDto;
@@ -13,6 +15,8 @@ import com.human.infinite.power.reportly.domain.analysisresultjob.entity.Analysi
 import com.human.infinite.power.reportly.domain.analysisresultjob.repository.AnalysisResultJobRepository;
 import com.human.infinite.power.reportly.domain.analysisresultscore.entity.AnalysisResultScore;
 import com.human.infinite.power.reportly.domain.analysisresultscore.repository.AnalysisResultScoreRepository;
+import com.human.infinite.power.reportly.domain.category.entity.Category;
+import com.human.infinite.power.reportly.domain.category.repository.CategoryRepository;
 import com.human.infinite.power.reportly.domain.competitor.repository.CompetitorRepository;
 import com.human.infinite.power.reportly.domain.job.entity.Job;
 import com.human.infinite.power.reportly.domain.job.repository.JobRepository;
@@ -27,7 +31,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -45,6 +51,7 @@ public class JobService {
     private final AnalysisResultScoreRepository analysisResultScoreRepository;
     private final KeywordRepository keywordRepository;
     private final AnalysisResultJobRepository analysisResultJobRepository;
+    private final CategoryRepository categoryRepository;
 
     /**
      * 분석을 수행하고 작업을 생성합니다.
@@ -272,14 +279,77 @@ public class JobService {
                 .average()
                 .orElse(0.0);
         
-        return new TotalScoreListResponseDto(
-                targetRank,
-                targetResult.getCompanyNo(),
-                targetResult.getCompanyIndustryTotalScore(),
-                competitorAvgScore,
-                allResults.size()
-        );
-    }
+                 return new TotalScoreListResponseDto(
+                 targetRank,
+                 targetResult.getCompanyNo(),
+                 targetResult.getCompanyIndustryTotalScore(),
+                 competitorAvgScore,
+                 allResults.size()
+         );
+     }
+
+     /**
+      * 분석결과 점수 통계를 조회합니다.
+      * 경쟁사 및 타겟 회사의 카테고리별 평균 점수 통계 데이터를 반환합니다.
+      *
+      * @param jobNo 작업 번호
+      * @return 분석결과 점수 통계 응답 DTO
+      */
+     public AnalysisResultScoreStatisticsResponseDto getAnalysisResultScoreStatistics(Long jobNo) {
+         // Job 존재 여부 확인
+         Job job = jobRepository.findById(jobNo)
+                 .orElseThrow(() -> new UserException("분석결과 통계를 찾을 수 없습니다."));
+         
+         // 해당 Job에 연결된 모든 AnalysisResultJob 조회
+         List<AnalysisResultJob> analysisResultJobs = analysisResultJobRepository.findByJobNo(jobNo);
+         if (analysisResultJobs.isEmpty()) {
+             throw new UserException("분석결과 통계를 찾을 수 없습니다.");
+         }
+         
+         // 모든 연관된 AnalysisResult ID 목록
+         List<Long> analysisResultNos = analysisResultJobs.stream()
+                 .map(AnalysisResultJob::getAnalysisResultNo)
+                 .collect(Collectors.toList());
+         
+         // 모든 점수와 카테고리 정보 한 번에 조회
+         List<AnalysisResultScore> allScores = analysisResultScoreRepository.findAllByAnalysisResultNoIn(analysisResultNos);
+         List<Category> allCategories = categoryRepository.findAll();
+         Map<Long, String> categoryNameMap = allCategories.stream()
+                 .collect(Collectors.toMap(Category::getCategoryNo, Category::getCategoryName));
+         
+         // 타겟 회사의 카테고리별 점수
+         List<CategoryScoreDto> targetCategoryScores = allScores.stream()
+                 .filter(score -> score.getAnalysisResultNo().equals(job.getAnalysisResultNo()))
+                 .map(score -> new CategoryScoreDto(
+                         score.getCategoryNo(),
+                         categoryNameMap.get(score.getCategoryNo()),
+                         score.getCategoryScore().doubleValue()))
+                 .collect(Collectors.toList());
+         
+         // 경쟁사들의 카테고리별 평균 점수
+         Map<Long, List<Float>> competitorScoresByCategory = allScores.stream()
+                 .filter(score -> !score.getAnalysisResultNo().equals(job.getAnalysisResultNo()))
+                 .collect(Collectors.groupingBy(
+                         AnalysisResultScore::getCategoryNo,
+                         Collectors.mapping(AnalysisResultScore::getCategoryScore, Collectors.toList())
+                 ));
+         
+         List<CategoryScoreDto> competitorAvgCategoryScores = competitorScoresByCategory.entrySet().stream()
+                 .map(entry -> {
+                     double avgScore = entry.getValue().stream()
+                             .mapToDouble(Float::doubleValue)
+                             .average()
+                             .orElse(0.0);
+                     return new CategoryScoreDto(
+                             entry.getKey(),
+                             categoryNameMap.get(entry.getKey()),
+                             avgScore
+                     );
+                 })
+                 .collect(Collectors.toList());
+         
+         return new AnalysisResultScoreStatisticsResponseDto(targetCategoryScores, competitorAvgCategoryScores);
+     }
 
     /**
      * AI 프롬프트 응답을 모방한 더미 데이터를 생성합니다.
