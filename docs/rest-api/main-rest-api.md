@@ -18,11 +18,10 @@
     - **200 OK**
 
         ```json
-       
           {
-            "companyNo": "101"
-          }
-        
+              "key": "companyNo", 
+              "no": "1001"
+           }
         ```
 
 ### **GET /reportly-api/companies**
@@ -141,20 +140,20 @@
     - **200 OK**
 
         ```json
-       
-          {
-            "industryNo": "101"
-          }
+           {
+              "key": "industryNo", 
+              "no": "1001"
+           }
         
         ```        
 
 ## 3. 분석결과 API
 
-### **POST /reportly-api/analysis-results**
+### **POST /reportly-api/jobs**
 
 - **설명**
     - 요청한 브랜드명, 경쟁사명, 업종명을 기반으로 API 질의 또는 캐싱된 응답을 활용해 분석결과 데이터를 저장
-    - 분석 결과 저장 후 식별자(`analysisResultNo`)를 반환
+    - 분석 결과 저장 후 식별자를 반환
 - 개발 process
     - 요청 왔을 때 companyNo, industryNo, date 를 활용해서  AnalysisResult.companyNo, AnalysisResult.industryNo   에 값이 이미 있는 법인은 아무 행동을 하지 않고 break하고 그 외에 값이 없는 법인이면 getResult()라는 비어있는 메서드를 호출한다.
         - ex) (101, 10), (102, 10), (103, 10), (104, 10)
@@ -178,9 +177,9 @@
     - **201 Created**
         
         ```json
-        
         {
-          "analysisResultNo": "1001"
+          "key": "jobNo", 
+          "no": "1001"
         }
         ```
         
