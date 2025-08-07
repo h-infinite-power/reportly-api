@@ -56,10 +56,9 @@ public class AnalysisResultController {
      */
     @GetMapping("/{analysisResultNo}/analysis-result-scores")
     public ResponseEntity<List<AnalysisResultScoreResponseDto>> getAnalysisResultScores(
-            @PathVariable("analysisResultNo") Long analysisResultNo,
-            @RequestParam("companyNo") Long companyNo) {
+            @PathVariable("analysisResultNo") Long analysisResultNo) {
         List<AnalysisResultScoreResponseDto> response = 
-                analysisResultService.getAnalysisResultScores(analysisResultNo, companyNo);
+                analysisResultService.getAnalysisResultScores(analysisResultNo);
         return ResponseEntity.ok(response);
     }
 

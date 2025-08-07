@@ -17,6 +17,26 @@ public interface AnalysisResultScoreRepository extends JpaRepository<AnalysisRes
     List<AnalysisResultScore> findByAnalysisResultNo(Long analysisResultNo);
 
     List<AnalysisResultScore> findAllByAnalysisResultNoIn(List<Long> analysisResultNos);
+
+    /**
+     * 분석결과 번호로 카테고리별 점수를 조회합니다.
+     * 
+     * @param analysisResultNo 분석결과 번호
+     * @return 카테고리별 점수 목록
+     */
+    @Query("SELECT ars FROM AnalysisResultScore ars " +
+           "JOIN FETCH ars.category c " +
+           "WHERE ars.analysisResultNo = :analysisResultNo " +
+           "ORDER BY c.categoryName ASC")
+    List<AnalysisResultScore> findByAnalysisResultNoWithCategoryOrderByCategoryName(@Param("analysisResultNo") Long analysisResultNo);
+
+    /**
+     * 분석결과 번호와 카테고리 번호로 점수를 조회합니다.
+     * @param analysisResultNo 분석결과 번호
+     * @param categoryNo 카테고리 번호
+     * @return 분석결과 점수 (없으면 null)
+     */
+    AnalysisResultScore findFirstByAnalysisResultNoAndCategoryNo(Long analysisResultNo, Long categoryNo);
     
     /**
      * 분석결과 번호로 카테고리별 점수를 카테고리와 함께 조회합니다.

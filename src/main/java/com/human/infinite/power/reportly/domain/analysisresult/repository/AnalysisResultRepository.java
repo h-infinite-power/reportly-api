@@ -34,6 +34,14 @@ public interface AnalysisResultRepository extends JpaRepository<AnalysisResult, 
      * @return 분석결과
      */
     List<AnalysisResult> findByCompanyNoAndIndustryNoOrderByCreatedAtDesc(Long companyNo, Long industryNo);
+
+    /**
+     * 업종번호와 날짜로 분석결과 목록을 조회합니다.
+     * @param industryNo 업종 번호
+     * @param date 분석 일자
+     * @return 분석결과 목록
+     */
+    List<AnalysisResult> findByIndustryNoAndDate(Long industryNo, java.time.LocalDate date);
     
     /**
      * 분석결과번호로 회사와 업종 정보를 함께 조회합니다.
