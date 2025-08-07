@@ -25,9 +25,9 @@ public class AnalysisResultController {
      *
      * @return 종합 점수 목록
      */
-    @GetMapping("/{analysisResultId}/total-score-list")
-    public ResponseEntity<TotalScoreListResponseDto> getTotalScoreList(@PathVariable("analysisResultId") Long analysisResultId) {
-        TotalScoreListResponseDto response = analysisResultService.getTotalScoreList(analysisResultId);
+    @GetMapping("/{analysisResultNo}/total-score-list")
+    public ResponseEntity<TotalScoreListResponseDto> getTotalScoreList(@PathVariable("analysisResultNo") Long analysisResultNo) {
+        TotalScoreListResponseDto response = analysisResultService.getTotalScoreList(analysisResultNo);
         return ResponseEntity.ok(response);
     }
 
@@ -35,14 +35,14 @@ public class AnalysisResultController {
      * 분석결과 점수 통계를 조회합니다.
      * 경쟁사 및 타겟 회사의 카테고리별 평균 점수 통계 데이터를 반환합니다.
      *
-     * @param analysisResultId 분석결과 ID
+     * @param analysisResultNo 분석결과 No
      * @return 점수 통계 데이터
      */
-    @GetMapping("/{analysisResultId}/analysis-result-score-statistics")
+    @GetMapping("/{analysisResultNo}/analysis-result-score-statistics")
     public ResponseEntity<AnalysisResultScoreStatisticsResponseDto> getAnalysisResultScoreStatistics(
-            @PathVariable("analysisResultId") Long analysisResultId) {
+            @PathVariable("analysisResultNo") Long analysisResultNo) {
         AnalysisResultScoreStatisticsResponseDto response = 
-                analysisResultService.getAnalysisResultScoreStatistics(analysisResultId);
+                analysisResultService.getAnalysisResultScoreStatistics(analysisResultNo);
         return ResponseEntity.ok(response);
     }
 
@@ -50,16 +50,16 @@ public class AnalysisResultController {
      * 카테고리별 점수를 조회합니다.
      * 선택된 경쟁사의 카테고리별 점수를 조회합니다.
      *
-     * @param analysisResultId 분석결과 ID
+     * @param analysisResultNo 분석결과 No
      * @param companyNo 선택된 경쟁사 번호
      * @return 카테고리별 점수 목록
      */
-    @GetMapping("/{analysisResultId}/analysis-result-scores")
+    @GetMapping("/{analysisResultNo}/analysis-result-scores")
     public ResponseEntity<List<AnalysisResultScoreResponseDto>> getAnalysisResultScores(
-            @PathVariable("analysisResultId") Long analysisResultId,
+            @PathVariable("analysisResultNo") Long analysisResultNo,
             @RequestParam("companyNo") Long companyNo) {
         List<AnalysisResultScoreResponseDto> response = 
-                analysisResultService.getAnalysisResultScores(analysisResultId, companyNo);
+                analysisResultService.getAnalysisResultScores(analysisResultNo, companyNo);
         return ResponseEntity.ok(response);
     }
 
@@ -67,14 +67,14 @@ public class AnalysisResultController {
      * 분석결과 상세 정보를 조회합니다.
      * 질문/답변 및 AI 인사이트 요약 상세 정보를 조회합니다.
      *
-     * @param analysisResultId 분석결과 ID
+     * @param analysisResultNo 분석결과 No
      * @return 분석결과 상세 정보
      */
-    @GetMapping("/{analysisResultId}")
+    @GetMapping("/{analysisResultNo}")
     public ResponseEntity<AnalysisResultDetailResponseDto> getAnalysisResultDetail(
-            @PathVariable("analysisResultId") Long analysisResultId) {
+            @PathVariable("analysisResultNo") Long analysisResultNo) {
         AnalysisResultDetailResponseDto response = 
-                analysisResultService.getAnalysisResultDetail(analysisResultId);
+                analysisResultService.getAnalysisResultDetail(analysisResultNo);
         return ResponseEntity.ok(response);
     }
 }

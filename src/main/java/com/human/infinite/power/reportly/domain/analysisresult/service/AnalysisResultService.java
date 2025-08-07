@@ -201,7 +201,7 @@ public class AnalysisResultService {
      *
      * @return 종합 점수 목록 DTO
      */
-    public TotalScoreListResponseDto getTotalScoreList(Long analysisResultId) {
+    public TotalScoreListResponseDto getTotalScoreList(Long analysisResultNo) {
         // TODO: 실제 데이터베이스에서 조회하는 로직으로 대체
         // 현재는 더미 데이터 반환
         return new TotalScoreListResponseDto(
@@ -216,12 +216,12 @@ public class AnalysisResultService {
     /**
      * 분석결과 점수 통계를 조회합니다.
      *
-     * @param analysisResultId 분석결과 ID
+     * @param analysisResultNo 분석결과 No
      * @return 점수 통계 데이터
      */
-    public AnalysisResultScoreStatisticsResponseDto getAnalysisResultScoreStatistics(Long analysisResultId) {
+    public AnalysisResultScoreStatisticsResponseDto getAnalysisResultScoreStatistics(Long analysisResultNo) {
         // 분석결과 존재 여부 확인
-        analysisResultRepository.findById(analysisResultId)
+        analysisResultRepository.findById(analysisResultNo)
                 .orElseThrow(() -> new UserException("분석결과 통계를 찾을 수 없습니다."));
         
         // TODO: 실제 카테고리별 점수 통계 조회 로직 구현
@@ -277,9 +277,9 @@ public class AnalysisResultService {
      * @param analysisResultId 분석결과 ID
      * @return 분석결과 상세 정보
      */
-    public AnalysisResultDetailResponseDto getAnalysisResultDetail(Long analysisResultId) {
+    public AnalysisResultDetailResponseDto getAnalysisResultDetail(Long analysisResultNo) {
         // 분석결과 조회
-        AnalysisResult analysisResult = analysisResultRepository.findById(analysisResultId)
+        AnalysisResult analysisResult = analysisResultRepository.findById(analysisResultNo)
                 .orElseThrow(() -> new UserException("분석결과 상세 정보를 찾을 수 없습니다."));
         
         // TODO: 실제 질문/답변 데이터 조회 로직 구현

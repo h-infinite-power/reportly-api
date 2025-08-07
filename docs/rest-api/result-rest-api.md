@@ -161,7 +161,7 @@
       
 ---
 
-### **GET /reportly-api/analysis-results/{analysisResultId}**
+### **GET /reportly-api/analysis-results/{analysisResultNo}**
 
 - **설명**
     - 질문/답변 및 AI 인사이트 요약 상세 조회
@@ -169,7 +169,7 @@
         - AI 인사이트 요약(강점, 약점, 개선제안)
         - `프롬프트 분석` 영역
 - **요청값**
-    - `analysisResultId`: 분석결과 ID
+    - `analysisResultNo`: 분석결과 No
 - **응답**
     - **200 OK**
         
