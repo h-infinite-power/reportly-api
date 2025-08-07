@@ -1,0 +1,242 @@
+[
+  {
+    "brand": "삼성전자",
+    "categoryResults": [
+      {
+        "questionId": 10,
+        "category": "인지도",
+        "answer": "삼성전자는 글로벌 브랜드로서 강력한 인지도를 보유하고 있으며, 특히 스마트폰과 반도체 분야에서 압도적인 시장 점유율을 차지하고 있습니다.",
+        "positiveKeyword": ["글로벌브랜드", "시장점유율", "혁신기술", "품질"],
+        "negativeKeyword": ["중국브랜드경쟁", "가격부담"],
+        "score": 92,
+        "confidence": 0.95,
+        "supportingEvidence": "브랜드 가치 평가에서 아시아 1위, 글로벌 전자업계 상위권 유지"
+      },
+      {
+        "questionId": 11,
+        "category": "브랜딩",
+        "answer": "일관된 브랜드 아이덴티티와 혁신 이미지를 구축하여 프리미엄 포지셔닝을 성공적으로 유지하고 있습니다.",
+        "positiveKeyword": ["프리미엄", "혁신", "일관성", "신뢰"],
+        "negativeKeyword": ["복잡한제품군", "브랜드혼재"],
+        "score": 89,
+        "confidence": 0.92,
+        "supportingEvidence": "브랜드 일관성 지수 및 고객 인식 조사 결과"
+      },
+      {
+        "questionId": 12,
+        "category": "마케팅",
+        "answer": "다양한 채널을 통한 통합 마케팅과 디지털 전환에 적극적으로 대응하고 있으나, ROI 측면에서 개선의 여지가 있습니다.",
+        "positiveKeyword": ["통합마케팅", "디지털전환", "글로벌캠페인"],
+        "negativeKeyword": ["마케팅비용", "ROI", "타겟팅정확도"],
+        "score": 78,
+        "confidence": 0.88,
+        "supportingEvidence": "마케팅 효과 측정 및 경쟁사 대비 분석"
+      },
+      {
+        "questionId": 13,
+        "category": "서비스",
+        "answer": "글로벌 서비스 네트워크를 구축하고 있으나, 일부 지역에서 서비스 품질의 편차가 존재합니다.",
+        "positiveKeyword": ["글로벌네트워크", "전문서비스", "빠른응답"],
+        "negativeKeyword": ["지역편차", "서비스비용", "복잡한절차"],
+        "score": 83,
+        "confidence": 0.90,
+        "supportingEvidence": "고객 만족도 조사 및 서비스 품질 평가"
+      },
+      {
+        "questionId": 14,
+        "category": "품질",
+        "answer": "세계 최고 수준의 기술력과 품질 관리 시스템을 보유하고 있으며, 지속적인 R&D 투자로 품질 우위를 유지하고 있습니다.",
+        "positiveKeyword": ["최고기술", "품질시스템", "R&D투자", "내구성"],
+        "negativeKeyword": ["일부제품결함", "리콜이슈"],
+        "score": 94,
+        "confidence": 0.97,
+        "supportingEvidence": "품질 인증 획득 현황 및 기술력 평가"
+      },
+      {
+        "questionId": 15,
+        "category": "가격",
+        "answer": "프리미엄 가격 정책을 유지하고 있어 가격 경쟁력 측면에서는 다소 불리하나, 가치 대비 합리적인 가격 구조를 제공합니다.",
+        "positiveKeyword": ["가치대비합리적", "프리미엄품질"],
+        "negativeKeyword": ["높은가격", "가격경쟁력부족", "부담"],
+        "score": 72,
+        "confidence": 0.85,
+        "supportingEvidence": "가격 경쟁력 분석 및 고객 가격 인식 조사"
+      },
+      {
+        "questionId": 16,
+        "category": "혁신",
+        "answer": "지속적인 기술 혁신과 신제품 개발로 업계를 선도하고 있으며, 특히 반도체와 디스플레이 기술에서 독보적인 위치를 차지하고 있습니다.",
+        "positiveKeyword": ["기술혁신", "업계선도", "독보적기술", "신제품"],
+        "negativeKeyword": ["혁신속도", "경쟁사추격"],
+        "score": 96,
+        "confidence": 0.98,
+        "supportingEvidence": "특허 출원 현황 및 기술 혁신 평가"
+      }
+    ],
+    "insightSummary": {
+      "strengths": "삼성전자는 글로벌 브랜드 인지도, 최고 수준의 기술력과 품질, 지속적인 혁신 역량에서 압도적인 강점을 보유하고 있습니다. 특히 반도체와 디스플레이 기술에서는 독보적인 경쟁우위를 유지하고 있습니다.",
+      "weaknesses": "프리미엄 가격 정책으로 인한 가격 경쟁력 부족과 마케팅 ROI 개선 필요성, 일부 지역의 서비스 품질 편차 등이 주요 약점으로 분석됩니다.",
+      "recommendations": "가격 경쟁력 강화를 위한 중저가 제품군 확대, 마케팅 효율성 개선을 통한 ROI 향상, 글로벌 서비스 품질 표준화 및 지역별 맞춤 서비스 강화를 제안합니다."
+    }
+  },
+  {
+    "brand": "애플",
+    "categoryResults": [
+      {
+        "questionId": 10,
+        "category": "인지도",
+        "answer": "애플은 전 세계적으로 가장 인지도가 높은 브랜드 중 하나로, 혁신과 디자인의 대명사로 자리잡고 있습니다.",
+        "positiveKeyword": ["세계최고인지도", "혁신대명사", "프리미엄브랜드"],
+        "negativeKeyword": ["높은진입장벽", "엘리트이미지"],
+        "score": 98,
+        "confidence": 0.99,
+        "supportingEvidence": "글로벌 브랜드 가치 평가 1위, 브랜드 충성도 최상위권"
+      },
+      {
+        "questionId": 11,
+        "category": "브랜딩",
+        "answer": "심플하면서도 일관된 브랜드 아이덴티티를 구축하여 강력한 브랜드 파워를 보유하고 있습니다.",
+        "positiveKeyword": ["심플디자인", "일관성", "강력한브랜드파워", "차별화"],
+        "negativeKeyword": ["폐쇄성", "배타적이미지"],
+        "score": 95,
+        "confidence": 0.96,
+        "supportingEvidence": "브랜드 아이덴티티 일관성 평가 및 고객 브랜드 인식 조사"
+      },
+      {
+        "questionId": 12,
+        "category": "마케팅",
+        "answer": "혁신적이고 감성적인 마케팅으로 강력한 브랜드 이미지를 구축하고 있으며, 높은 마케팅 효율성을 보여줍니다.",
+        "positiveKeyword": ["혁신적마케팅", "감성마케팅", "높은효율성", "화제성"],
+        "negativeKeyword": ["과도한브랜딩", "마케팅의존"],
+        "score": 91,
+        "confidence": 0.94,
+        "supportingEvidence": "마케팅 효과 측정 및 브랜드 이미지 조사"
+      },
+      {
+        "questionId": 13,
+        "category": "서비스",
+        "answer": "프리미엄 고객 서비스와 생태계 통합 서비스를 제공하여 높은 고객 만족도를 유지하고 있습니다.",
+        "positiveKeyword": ["프리미엄서비스", "생태계통합", "높은만족도", "전문서비스"],
+        "negativeKeyword": ["서비스비용", "접근성제한", "복잡한절차"],
+        "score": 87,
+        "confidence": 0.91,
+        "supportingEvidence": "고객 서비스 만족도 조사 및 서비스 품질 평가"
+      },
+      {
+        "questionId": 14,
+        "category": "품질",
+        "answer": "엄격한 품질 기준과 지속적인 품질 개선으로 프리미엄 품질을 유지하고 있습니다.",
+        "positiveKeyword": ["엄격한기준", "프리미엄품질", "지속적개선", "내구성"],
+        "negativeKeyword": ["일부품질이슈", "수리비용"],
+        "score": 90,
+        "confidence": 0.93,
+        "supportingEvidence": "품질 테스트 결과 및 고객 품질 인식 조사"
+      },
+      {
+        "questionId": 15,
+        "category": "가격",
+        "answer": "프리미엄 가격 정책을 유지하여 가격 경쟁력은 낮으나, 브랜드 가치와 품질을 고려할 때 합리적인 가격 구조를 제공합니다.",
+        "positiveKeyword": ["브랜드가치", "합리적구조"],
+        "negativeKeyword": ["매우높은가격", "가격경쟁력없음", "접근성제한"],
+        "score": 65,
+        "confidence": 0.80,
+        "supportingEvidence": "가격 대비 가치 분석 및 경쟁사 가격 비교"
+      },
+      {
+        "questionId": 16,
+        "category": "혁신",
+        "answer": "혁신의 아이콘으로서 지속적인 기술 혁신과 새로운 카테고리 창조로 시장을 선도하고 있습니다.",
+        "positiveKeyword": ["혁신아이콘", "시장선도", "카테고리창조", "기술혁신"],
+        "negativeKeyword": ["혁신속도둔화", "추격당함"],
+        "score": 93,
+        "confidence": 0.95,
+        "supportingEvidence": "혁신 지수 평가 및 신제품 출시 현황"
+      }
+    ],
+    "insightSummary": {
+      "strengths": "애플은 세계 최고 수준의 브랜드 인지도와 강력한 브랜드 파워, 혁신적인 마케팅과 높은 품질, 지속적인 기술 혁신 역량에서 독보적인 강점을 보유하고 있습니다.",
+      "weaknesses": "매우 높은 가격으로 인한 접근성 제한과 가격 경쟁력 부족, 일부 서비스의 높은 비용과 복잡한 절차 등이 주요 약점으로 분석됩니다.",
+      "recommendations": "중저가 제품군 확대를 통한 시장 접근성 개선, 서비스 프로세스 간소화 및 비용 최적화, 글로벌 시장 확대를 위한 지역별 맞춤 전략 수립을 제안합니다."
+    }
+  },
+  {
+    "brand": "LG전자",
+    "categoryResults": [
+      {
+        "questionId": 10,
+        "category": "인지도",
+        "answer": "LG전자는 가전제품 분야에서 강력한 인지도를 보유하고 있으나, 글로벌 브랜드 파워 측면에서는 개선의 여지가 있습니다.",
+        "positiveKeyword": ["가전강자", "기술력", "혁신제품"],
+        "negativeKeyword": ["글로벌인지도부족", "브랜드파워약함"],
+        "score": 75,
+        "confidence": 0.85,
+        "supportingEvidence": "가전제품 시장점유율 및 브랜드 인지도 조사"
+      },
+      {
+        "questionId": 11,
+        "category": "브랜딩",
+        "answer": "Life's Good 슬로건을 중심으로 일관된 브랜드 메시지를 전달하고 있으나, 브랜드 차별화 측면에서 강화가 필요합니다.",
+        "positiveKeyword": ["일관된메시지", "라이프스타일브랜드"],
+        "negativeKeyword": ["차별화부족", "브랜드정체성모호"],
+        "score": 72,
+        "confidence": 0.83,
+        "supportingEvidence": "브랜드 이미지 조사 및 경쟁사 대비 분석"
+      },
+      {
+        "questionId": 12,
+        "category": "마케팅",
+        "answer": "다양한 마케팅 채널을 활용하고 있으나, 마케팅 메시지의 일관성과 효과성 측면에서 개선이 필요합니다.",
+        "positiveKeyword": ["다양한채널", "창의적캠페인"],
+        "negativeKeyword": ["일관성부족", "효과성저조", "마케팅ROI"],
+        "score": 68,
+        "confidence": 0.80,
+        "supportingEvidence": "마케팅 효과 분석 및 캠페인 성과 평가"
+      },
+      {
+        "questionId": 13,
+        "category": "서비스",
+        "answer": "고객 서비스 네트워크를 구축하고 있으나, 서비스 품질과 고객 만족도 측면에서 지속적인 개선이 필요합니다.",
+        "positiveKeyword": ["서비스네트워크", "기술지원"],
+        "negativeKeyword": ["서비스품질편차", "고객만족도저조", "응답속도"],
+        "score": 70,
+        "confidence": 0.82,
+        "supportingEvidence": "고객 서비스 만족도 조사 및 서비스 품질 평가"
+      },
+      {
+        "questionId": 14,
+        "category": "품질",
+        "answer": "제품 품질은 양호한 수준을 유지하고 있으나, 일부 제품군에서 내구성과 신뢰성 개선이 필요합니다.",
+        "positiveKeyword": ["양호한품질", "기술개발"],
+        "negativeKeyword": ["내구성이슈", "신뢰성부족", "품질편차"],
+        "score": 74,
+        "confidence": 0.84,
+        "supportingEvidence": "품질 테스트 결과 및 고객 불만 분석"
+      },
+      {
+        "questionId": 15,
+        "category": "가격",
+        "answer": "경쟁력 있는 가격 정책으로 가격 대비 가치 측면에서 양호한 평가를 받고 있습니다.",
+        "positiveKeyword": ["경쟁력있는가격", "가성비", "합리적"],
+        "negativeKeyword": ["저가이미지", "마진압박"],
+        "score": 81,
+        "confidence": 0.87,
+        "supportingEvidence": "가격 경쟁력 분석 및 고객 가격 만족도 조사"
+      },
+      {
+        "questionId": 16,
+        "category": "혁신",
+        "answer": "일부 분야에서 혁신적인 기술을 선보이고 있으나, 전반적인 혁신 속도와 범위에서 개선이 필요합니다.",
+        "positiveKeyword": ["기술혁신", "창의적제품"],
+        "negativeKeyword": ["혁신속도느림", "혁신범위제한"],
+        "score": 73,
+        "confidence": 0.81,
+        "supportingEvidence": "기술 혁신 평가 및 신제품 개발 현황"
+      }
+    ],
+    "insightSummary": {
+      "strengths": "LG전자는 가전제품 분야에서의 기술력과 경쟁력 있는 가격 정책, 가성비 측면에서 강점을 보유하고 있습니다.",
+      "weaknesses": "글로벌 브랜드 파워 부족과 브랜드 차별화 미흡, 마케팅 효과성 저조, 서비스 품질 편차 등이 주요 약점으로 분석됩니다.",
+      "recommendations": "브랜드 아이덴티티 강화 및 차별화 전략 수립, 통합 마케팅 전략을 통한 효과성 개선, 서비스 품질 표준화 및 고객 만족도 향상 프로그램 도입을 제안합니다."
+    }
+  }
+]
