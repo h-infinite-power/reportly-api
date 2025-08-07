@@ -15,12 +15,17 @@ import java.time.LocalDateTime;
 
 /**
  * 경쟁사 정보를 관리하는 Entity 클래스
+ *
+ * 2025-08-07 21:31
+ * 이 클래스는 제거될 예정이고 도메인 제약조건때문에 잠시 유지합니다. 관련 service,repository 등  mvp가 어느정도 정리되면 제거합니다.
+ * db 및 db-ddl.md 문서에는 존재하며 erd에는 존재하지 않습니다.
  */
 @Entity
 @Table(name = "Competitor")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Deprecated(since = "1.0", forRemoval = true)
 public class Competitor {
     
     /**
