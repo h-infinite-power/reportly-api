@@ -334,4 +334,104 @@ public class AnalysisResultService {
         
         return qaList;
     }
+
+    /**
+     * AI 프롬프트 응답을 기반으로 분석결과를 저장합니다.
+     * 테스트용 메서드로, JSON 데이터를 실제 데이터베이스에 저장합니다.
+     *
+     * @param companyNo 회사 번호
+     * @param industryNo 업종 번호  
+     * @param promptResponse AI 프롬프트 응답 DTO
+     */
+    @Transactional
+    public void saveAnalysisResultFromPrompt(Long companyNo, Long industryNo, PromptResponseDto promptResponse) {
+        log.info("AI 프롬프트 응답 기반 분석결과 저장 시작 - 회사: {}, 업종: {}, 브랜드: {}", 
+                companyNo, industryNo, promptResponse.getBrand());
+        
+        LocalDate today = LocalDate.now();
+        
+        // 인사이트 요약 정보 생성
+        InsightSummaryDto insightSummary = promptResponse.getInsightSummary();
+        
+        // 분석결과 엔티티 생성
+        AnalysisResult analysisResult = new AnalysisResult(
+                companyNo,
+                industryNo,
+                today,
+                "AI 프롬프트 기반 분석: " + promptResponse.getBrand(),
+                insightSummary.getStrengths() + " " + insightSummary.getWeaknesses(),
+                calculateOverallScore(promptResponse.getCategoryResults()),
+                "AI 프롬프트 응답 데이터 기반",
+                insightSummary.getStrengths(),
+                insightSummary.getWeaknesses(),
+                insightSummary.getRecommendations()
+        );
+        
+        analysisResult = analysisResultRepository.save(analysisResult);
+        log.info("분석결과 저장 완료 - analysisResultNo: {}", analysisResult.getAnalysisResultNo());
+        
+        // 카테고리별 점수 저장
+        for (CategoryResultDto categoryResult : promptResponse.getCategoryResults()) {
+            AnalysisResultScore score = new AnalysisResultScore(
+                    analysisResult.getAnalysisResultNo(),
+                    categoryResult.getQuestionId(), // questionId를 categoryNo로 사용
+                    categoryResult.getScore().floatValue()
+            );
+            analysisResultScoreRepository.save(score);
+            
+            // 긍정/부정 키워드 저장
+            saveKeywords(analysisResult.getAnalysisResultNo(), categoryResult);
+        }
+        
+        log.info("AI 프롬프트 응답 기반 분석결과 저장 완료");
+    }
+    
+    /**
+     * 카테고리 결과 리스트에서 전체 평균 점수를 계산합니다.
+     *
+     * @param categoryResults 카테고리 결과 리스트
+     * @return 전체 평균 점수
+     */
+    private Double calculateOverallScore(List<CategoryResultDto> categoryResults) {
+        if (categoryResults == null || categoryResults.isEmpty()) {
+            return 0.0;
+        }
+        
+        return categoryResults.stream()
+                .mapToDouble(CategoryResultDto::getScore)
+                .average()
+                .orElse(0.0);
+    }
+    
+    /**
+     * 카테고리 결과의 긍정/부정 키워드를 저장합니다.
+     *
+     * @param analysisResultNo 분석결과 번호
+     * @param categoryResult 카테고리 결과
+     */
+    private void saveKeywords(Long analysisResultNo, CategoryResultDto categoryResult) {
+        // 긍정 키워드 저장
+        if (categoryResult.getPositiveKeyword() != null) {
+            for (String keyword : categoryResult.getPositiveKeyword()) {
+                Keyword keywordEntity = new Keyword(
+                        analysisResultNo,
+                        "POSITIVE",
+                        keyword
+                );
+                keywordRepository.save(keywordEntity);
+            }
+        }
+        
+        // 부정 키워드 저장
+        if (categoryResult.getNegativeKeyword() != null) {
+            for (String keyword : categoryResult.getNegativeKeyword()) {
+                Keyword keywordEntity = new Keyword(
+                        analysisResultNo,
+                        "NEGATIVE",
+                        keyword
+                );
+                keywordRepository.save(keywordEntity);
+            }
+        }
+    }
 }
