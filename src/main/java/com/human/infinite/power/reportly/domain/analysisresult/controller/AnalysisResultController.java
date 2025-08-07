@@ -1,5 +1,6 @@
 package com.human.infinite.power.reportly.domain.analysisresult.controller;
 
+import com.human.infinite.power.reportly.common.dto.NoResponseDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.*;
 import com.human.infinite.power.reportly.domain.analysisresult.service.AnalysisResultService;
 import lombok.RequiredArgsConstructor;
@@ -17,20 +18,6 @@ import java.util.List;
 public class AnalysisResultController {
 
     private final AnalysisResultService analysisResultService;
-
-    /**
-     * 분석결과를 생성합니다.
-     * 요청한 브랜드명, 경쟁사명, 업종명을 기반으로 분석결과 데이터를 저장합니다.
-     *
-     * @param requestDto 분석결과 생성 요청 DTO
-     * @return 생성된 분석결과 번호
-     */
-    @PostMapping
-    public ResponseEntity<AnalysisResultCreateResponseDto> createAnalysisResult(
-            @RequestBody AnalysisResultCreateRequestDto requestDto) {
-        AnalysisResultCreateResponseDto response = analysisResultService.createAnalysisResult(requestDto);
-        return ResponseEntity.ok(response);
-    }
 
     /**
      * 종합 점수 목록을 조회합니다.
