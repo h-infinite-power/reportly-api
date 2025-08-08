@@ -35,7 +35,7 @@ public class IndustryController {
      */
     @PostMapping
     public ResponseEntity<KeyValueResponseDto> createIndustry(@RequestBody NameRequestDto requestDto) {
-        if (requestDto == null || requestDto.getName() == null || requestDto.getName().trim().isEmpty()) {
+        if (requestDto == null || requestDto.getCompanyName() == null || requestDto.getCompanyName().trim().isEmpty()) {
             throw new UserException("업종 이름은 필수입니다.");
         }
         KeyValueResponseDto response = industryService.createIndustry(requestDto);

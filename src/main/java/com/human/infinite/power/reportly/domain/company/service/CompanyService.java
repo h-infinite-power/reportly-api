@@ -46,7 +46,7 @@ public class CompanyService {
     @Transactional
     public KeyValueResponseDto createCompany(NameRequestDto requestDto) {
         // Company Entity 생성 (생성자에서 자동으로 ID 생성)
-        Company company = new Company(requestDto.getName());
+        Company company = new Company(requestDto.getCompanyName());
         
         // 데이터베이스에 저장
         Company savedCompany = companyRepository.save(company);

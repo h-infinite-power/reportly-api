@@ -45,7 +45,7 @@ public class IndustryService {
     @Transactional
     public KeyValueResponseDto createIndustry(NameRequestDto requestDto) {
         // Industry Entity 생성 (생성자에서 자동으로 ID 생성)
-        Industry industry = new Industry(requestDto.getName());
+        Industry industry = new Industry(requestDto.getCompanyName());
         
         // 데이터베이스에 저장
         Industry savedIndustry = industryRepository.save(industry);

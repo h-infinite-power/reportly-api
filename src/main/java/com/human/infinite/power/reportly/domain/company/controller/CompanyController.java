@@ -35,7 +35,7 @@ public class CompanyController {
      */
     @PostMapping
     public ResponseEntity<KeyValueResponseDto> createCompany(@RequestBody NameRequestDto requestDto) {
-        if (requestDto == null || requestDto.getName() == null || requestDto.getName().trim().isEmpty()) {
+        if (requestDto == null || requestDto.getCompanyName() == null || requestDto.getCompanyName().trim().isEmpty()) {
             throw new UserException("브랜드 이름은 필수입니다.");
         }
         KeyValueResponseDto response = companyService.createCompany(requestDto);

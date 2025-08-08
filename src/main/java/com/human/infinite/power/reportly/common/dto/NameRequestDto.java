@@ -1,14 +1,19 @@
 package com.human.infinite.power.reportly.common.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 이름만 받는 공통 요청 DTO
  */
+@Getter
+@Setter
 public class NameRequestDto {
     
     /**
      * 이름
      */
-    private String name;
+    private String companyName;
     
     /**
      * 기본 생성자
@@ -19,18 +24,9 @@ public class NameRequestDto {
     /**
      * 생성자
      * 
-     * @param name 이름
+     * @param companyName 이름
      */
-    public NameRequestDto(String name) {
-        this.name = name;
-    }
-    
-    // Getter and Setter
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
+    public NameRequestDto(String companyName) {
+        this.companyName = companyName;
     }
 }
