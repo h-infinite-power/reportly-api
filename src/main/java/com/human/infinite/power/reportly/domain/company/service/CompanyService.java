@@ -1,8 +1,7 @@
 package com.human.infinite.power.reportly.domain.company.service;
 
-import com.human.infinite.power.reportly.common.IdGenerator;
 import com.human.infinite.power.reportly.common.dto.KeyValueResponseDto;
-import com.human.infinite.power.reportly.common.dto.NameRequestDto;
+import com.human.infinite.power.reportly.domain.company.dto.CompanyCreateRequestDto;
 import com.human.infinite.power.reportly.domain.company.dto.CompanyResponseDto;
 import com.human.infinite.power.reportly.domain.company.entity.Company;
 import com.human.infinite.power.reportly.domain.company.repository.CompanyRepository;
@@ -44,7 +43,7 @@ public class CompanyService {
      * @return 키-값 형태의 응답 DTO
      */
     @Transactional
-    public KeyValueResponseDto createCompany(NameRequestDto requestDto) {
+    public KeyValueResponseDto createCompany(CompanyCreateRequestDto requestDto) {
         // Company Entity 생성 (생성자에서 자동으로 ID 생성)
         Company company = new Company(requestDto.getCompanyName());
         

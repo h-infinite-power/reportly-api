@@ -1,7 +1,7 @@
 package com.human.infinite.power.reportly.domain.industry.service;
 
 import com.human.infinite.power.reportly.common.dto.KeyValueResponseDto;
-import com.human.infinite.power.reportly.common.dto.NameRequestDto;
+import com.human.infinite.power.reportly.domain.industry.dto.IndustryCreateRequestDto;
 import com.human.infinite.power.reportly.domain.industry.dto.IndustryResponseDto;
 import com.human.infinite.power.reportly.domain.industry.entity.Industry;
 import com.human.infinite.power.reportly.domain.industry.repository.IndustryRepository;
@@ -43,9 +43,9 @@ public class IndustryService {
      * @return 키-값 형태의 응답 DTO
      */
     @Transactional
-    public KeyValueResponseDto createIndustry(NameRequestDto requestDto) {
+    public KeyValueResponseDto createIndustry(IndustryCreateRequestDto requestDto) {
         // Industry Entity 생성 (생성자에서 자동으로 ID 생성)
-        Industry industry = new Industry(requestDto.getCompanyName());
+        Industry industry = new Industry(requestDto.getIndustryName());
         
         // 데이터베이스에 저장
         Industry savedIndustry = industryRepository.save(industry);

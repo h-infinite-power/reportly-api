@@ -1,7 +1,7 @@
 package com.human.infinite.power.reportly.domain.industry.controller;
 
 import com.human.infinite.power.reportly.common.dto.KeyValueResponseDto;
-import com.human.infinite.power.reportly.common.dto.NameRequestDto;
+import com.human.infinite.power.reportly.domain.industry.dto.IndustryCreateRequestDto;
 import com.human.infinite.power.reportly.domain.industry.dto.IndustryResponseDto;
 import com.human.infinite.power.reportly.domain.industry.service.IndustryService;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +34,8 @@ public class IndustryController {
      * @return 생성된 업종 정보
      */
     @PostMapping
-    public ResponseEntity<KeyValueResponseDto> createIndustry(@RequestBody NameRequestDto requestDto) {
-        if (requestDto == null || requestDto.getCompanyName() == null || requestDto.getCompanyName().trim().isEmpty()) {
+    public ResponseEntity<KeyValueResponseDto> createIndustry(@RequestBody IndustryCreateRequestDto requestDto) {
+        if (requestDto == null || requestDto.getIndustryName() == null || requestDto.getIndustryName().trim().isEmpty()) {
             throw new UserException("업종 이름은 필수입니다.");
         }
         KeyValueResponseDto response = industryService.createIndustry(requestDto);

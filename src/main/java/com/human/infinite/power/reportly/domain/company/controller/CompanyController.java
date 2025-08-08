@@ -1,7 +1,7 @@
 package com.human.infinite.power.reportly.domain.company.controller;
 
 import com.human.infinite.power.reportly.common.dto.KeyValueResponseDto;
-import com.human.infinite.power.reportly.common.dto.NameRequestDto;
+import com.human.infinite.power.reportly.domain.company.dto.CompanyCreateRequestDto;
 import com.human.infinite.power.reportly.domain.company.dto.CompanyResponseDto;
 import com.human.infinite.power.reportly.domain.company.service.CompanyService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class CompanyController {
      * @return 생성된 브랜드 정보
      */
     @PostMapping
-    public ResponseEntity<KeyValueResponseDto> createCompany(@RequestBody NameRequestDto requestDto) {
+    public ResponseEntity<KeyValueResponseDto> createCompany(@RequestBody CompanyCreateRequestDto requestDto) {
         if (requestDto == null || requestDto.getCompanyName() == null || requestDto.getCompanyName().trim().isEmpty()) {
             throw new UserException("브랜드 이름은 필수입니다.");
         }
