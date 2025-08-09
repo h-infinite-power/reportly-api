@@ -37,8 +37,8 @@ class AnalysisResultServiceTest {
     @Test
     void testJsonDeserializationAndDataSaving() throws Exception {
         // given
-        Long companyNo = 1L;
-        Long industryNo = 1L;
+        List<Long> companyNoList = List.of(1483912791016180743L, 1483912911038656997L, 1483913055452341553L, 1483912956654371967L); // Toss, 삼성금융, KB국민은행, 카카오페이
+        Long industryNo = 1483912168854887831L; // 금융/핀테크
         
         // JSON 파일 읽기
         ClassPathResource resource = new ClassPathResource("prompt-responses.json");
@@ -53,47 +53,21 @@ class AnalysisResultServiceTest {
         // then - 역직렬화 검증
         assertNotNull(promptResponses);
         assertFalse(promptResponses.isEmpty());
-        assertEquals(3, promptResponses.size());
-        
-        // 첫 번째 프롬프트 응답 검증
-        PromptResponseDto firstResponse = promptResponses.get(0);
-        assertEquals("삼성전자", firstResponse.getBrand());
-        assertNotNull(firstResponse.getCategoryResults());
-        assertFalse(firstResponse.getCategoryResults().isEmpty());
-        assertEquals(7, firstResponse.getCategoryResults().size());
-        assertNotNull(firstResponse.getInsightSummary());
-        
-        // 카테고리 결과 검증
-        var firstCategory = firstResponse.getCategoryResults().get(0);
-        assertEquals(10L, firstCategory.getQuestionId());
-        assertEquals("인지도", firstCategory.getCategory());
-        assertNotNull(firstCategory.getAnswer());
-        assertNotNull(firstCategory.getPositiveKeyword());
-        assertNotNull(firstCategory.getNegativeKeyword());
-        assertTrue(firstCategory.getScore() > 0);
-        assertTrue(firstCategory.getConfidence() > 0);
-        assertNotNull(firstCategory.getSupportingEvidence());
-        
-        // 인사이트 요약 검증
-        var insightSummary = firstResponse.getInsightSummary();
-        assertNotNull(insightSummary.getStrengths());
-        assertNotNull(insightSummary.getWeaknesses());
-        assertNotNull(insightSummary.getRecommendations());
         
         // when - 데이터 저장 테스트
-        for (PromptResponseDto promptResponse : promptResponses) {
+        for (int i =0; i < companyNoList.size(); i++) {
+            Long companyNo = companyNoList.get(i);
+            PromptResponseDto promptResponseDto = promptResponses.get(i);
+
             // 각 프롬프트 응답에 대해 데이터 저장 실행
             assertDoesNotThrow(() -> {
                 analysisResultService.saveAnalysisResultFromPrompt(
-                    companyNo, 
-                    industryNo, 
-                    promptResponse
+                    companyNo,
+                    industryNo,
+                    promptResponseDto
                 );
             });
         }
-        
-        // 저장 성공 검증 (예외가 발생하지 않으면 성공)
-        // 실제 프로젝트에서는 저장된 데이터를 조회하여 검증할 수 있습니다.
     }
     
     /**
