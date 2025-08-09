@@ -68,16 +68,19 @@ public class JobService {
         AnalysisResult targetCompanyAnalysisResult = saveAnalysisResult(targetCompanyNo, industryNo);
 
         // 경쟁회사 분석결과 저장
-        List<AnalysisResult> companyAnalysisResultList = new ArrayList<>();
+        List<AnalysisResult> competitorCompanyAnalysisResultList = new ArrayList<>();
         for (Long competitorCompanyNo : competitorCompanyNoList) {
             AnalysisResult competitorResult = saveAnalysisResult(competitorCompanyNo, industryNo);
-            companyAnalysisResultList.add(competitorResult);
+            competitorCompanyAnalysisResultList.add(competitorResult);
         }
 
         // Job 생성 및 저장 (타겟 회사의 분석결과를 기준으로)
         Job job = new Job(targetCompanyAnalysisResult.getAnalysisResultNo());
         job = jobRepository.save(job);
-        analysisResultJobRepository.save(new AnalysisResultJob(job.getJobNo(), targetCompanyAnalysisResult.getAnalysisResultNo()));
+        final Long jobNo = job.getJobNo();
+        competitorCompanyAnalysisResultList.forEach(
+            competitorResult -> analysisResultJobRepository.save(new AnalysisResultJob(jobNo, competitorResult.getAnalysisResultNo()))
+        );
 
         log.info("분석 완료 - 작업번호: {}", job.getJobNo());
         return NoResponseDto.of("jobNo", job.getJobNo());
