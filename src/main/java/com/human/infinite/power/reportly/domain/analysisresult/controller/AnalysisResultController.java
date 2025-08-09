@@ -20,33 +20,6 @@ public class AnalysisResultController {
     private final AnalysisResultService analysisResultService;
 
     /**
-     * 종합 점수 목록을 조회합니다.
-     * 경쟁사와 우리 회사의 절대 점수를 비교한 데이터를 반환합니다.
-     *
-     * @return 종합 점수 목록
-     */
-    @GetMapping("/{analysisResultNo}/total-score-list")
-    public ResponseEntity<TotalScoreListResponseDto> getTotalScoreList(@PathVariable("analysisResultNo") Long analysisResultNo) {
-        TotalScoreListResponseDto response = analysisResultService.getTotalScoreList(analysisResultNo);
-        return ResponseEntity.ok(response);
-    }
-
-    /**
-     * 분석결과 점수 통계를 조회합니다.
-     * 경쟁사 및 타겟 회사의 카테고리별 평균 점수 통계 데이터를 반환합니다.
-     *
-     * @param analysisResultNo 분석결과 No
-     * @return 점수 통계 데이터
-     */
-    @GetMapping("/{analysisResultNo}/analysis-result-score-statistics")
-    public ResponseEntity<AnalysisResultScoreStatisticsResponseDto> getAnalysisResultScoreStatistics(
-            @PathVariable("analysisResultNo") Long analysisResultNo) {
-        AnalysisResultScoreStatisticsResponseDto response = 
-                analysisResultService.getAnalysisResultScoreStatistics(analysisResultNo);
-        return ResponseEntity.ok(response);
-    }
-
-    /**
      * 카테고리별 점수를 조회합니다.
      * 선택된 경쟁사의 카테고리별 점수를 조회합니다.
      *

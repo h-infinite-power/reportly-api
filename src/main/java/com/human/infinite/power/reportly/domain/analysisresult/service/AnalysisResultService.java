@@ -1,23 +1,15 @@
 package com.human.infinite.power.reportly.domain.analysisresult.service;
 
-import com.human.infinite.power.reportly.common.dto.NoResponseDto;
 import com.human.infinite.power.reportly.common.exception.UserException;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.*;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.CategoryResultDto;
-import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.InsightSummaryDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.PromptResponseDto;
 import com.human.infinite.power.reportly.domain.analysisresult.entity.AnalysisResult;
 import com.human.infinite.power.reportly.domain.analysisresult.repository.AnalysisResultRepository;
-import com.human.infinite.power.reportly.domain.analysisresultjob.entity.AnalysisResultJob;
-import com.human.infinite.power.reportly.domain.analysisresultjob.repository.AnalysisResultJobRepository;
 import com.human.infinite.power.reportly.domain.analysisresultscore.entity.AnalysisResultScore;
 import com.human.infinite.power.reportly.domain.analysisresultscore.repository.AnalysisResultScoreRepository;
 import com.human.infinite.power.reportly.domain.category.entity.Category;
 import com.human.infinite.power.reportly.domain.category.repository.CategoryRepository;
-import com.human.infinite.power.reportly.domain.competitor.entity.Competitor;
-import com.human.infinite.power.reportly.domain.competitor.repository.CompetitorRepository;
-import com.human.infinite.power.reportly.domain.job.entity.Job;
-import com.human.infinite.power.reportly.domain.job.repository.JobRepository;
 import com.human.infinite.power.reportly.domain.keyword.entity.Keyword;
 import com.human.infinite.power.reportly.domain.keyword.repository.KeywordRepository;
 import com.human.infinite.power.reportly.domain.question.entity.Question;
@@ -42,116 +34,9 @@ public class AnalysisResultService {
 
     private final AnalysisResultRepository analysisResultRepository;
     private final AnalysisResultScoreRepository analysisResultScoreRepository;
-    private final CompetitorRepository competitorRepository;
     private final KeywordRepository keywordRepository;
     private final QuestionRepository questionRepository;
     private final CategoryRepository categoryRepository;
-
-
-
-    /**
-     * 더미 카테고리별 점수를 생성합니다.
-     *
-     * @param analysisResultNo 분석결과 번호
-     */
-    @Transactional
-    public void createDummyScores(Long analysisResultNo) {
-        Random random = new Random();
-        Long[] categoryNos = {10L, 11L, 12L, 13L, 14L}; // 더미 카테고리 번호들
-
-        for (Long categoryNo : categoryNos) {
-            AnalysisResultScore score = new AnalysisResultScore(
-                    analysisResultNo,
-                    categoryNo,
-                    70.0f + random.nextFloat() * 30.0f // 70~100 사이의 랜덤 점수
-            );
-            analysisResultScoreRepository.save(score);
-        }
-    }
-
-    /**
-     * 더미 키워드를 생성합니다.
-     *
-     * @param analysisResultNo 분석결과 번호
-     */
-    @Transactional
-    public void createDummyKeywords(Long analysisResultNo) {
-        String[] positiveKeywords = {"품질", "혁신", "신뢰", "브랜드", "서비스"};
-        String[] negativeKeywords = {"가격", "접근성", "속도", "복잡", "불편"};
-
-        // 긍정 키워드 저장
-        for (String keyword : positiveKeywords) {
-            Keyword keywordEntity = new Keyword(
-                    analysisResultNo,
-                    "POSITIVE",
-                    keyword
-            );
-            keywordRepository.save(keywordEntity);
-        }
-
-        // 부정 키워드 저장
-        for (String keyword : negativeKeywords) {
-            Keyword keywordEntity = new Keyword(
-                    analysisResultNo,
-                    "NEGATIVE",
-                    keyword
-            );
-            keywordRepository.save(keywordEntity);
-        }
-    }
-
-    /**
-     * 종합 점수 목록을 조회합니다.
-     * 현재는 더미 데이터를 반환하며, 추후 실제 데이터베이스 조회 로직으로 대체될 예정입니다.
-     *
-     * @return 종합 점수 목록 DTO
-     */
-    public TotalScoreListResponseDto getTotalScoreList(Long analysisResultNo) {
-        // TODO: 실제 데이터베이스에서 조회하는 로직으로 대체
-        // 현재는 더미 데이터 반환
-        return new TotalScoreListResponseDto(
-                1,        // targetRank
-                101L,     // targetCompanyNo
-                87.0,     // targetTotalScore
-                76.0,     // competitorAvgTotalScore
-                4         // totalCompanyCount
-        );
-    }
-
-    /**
-     * 분석결과 점수 통계를 조회합니다.
-     *
-     * @param analysisResultNo 분석결과 No
-     * @return 점수 통계 데이터
-     */
-    public AnalysisResultScoreStatisticsResponseDto getAnalysisResultScoreStatistics(Long analysisResultNo) {
-        // 분석결과 존재 여부 확인
-        analysisResultRepository.findById(analysisResultNo)
-                .orElseThrow(() -> new UserException("분석결과 통계를 찾을 수 없습니다."));
-        
-        // TODO: 실제 카테고리별 점수 통계 조회 로직 구현
-        // 현재는 더미 데이터 반환
-        List<CategoryScoreDto> targetScores = Arrays.asList(
-                new CategoryScoreDto(10L, "브랜딩", 92.0),
-                new CategoryScoreDto(11L, "마케팅", 88.0),
-                new CategoryScoreDto(12L, "서비스", 85.0),
-                new CategoryScoreDto(13L, "품질", 90.0),
-                new CategoryScoreDto(14L, "가격", 75.0)
-        );
-        
-        List<CategoryScoreDto> competitorAvgScores = Arrays.asList(
-                new CategoryScoreDto(10L, "브랜딩", 80.0),
-                new CategoryScoreDto(11L, "마케팅", 82.0),
-                new CategoryScoreDto(12L, "서비스", 78.0),
-                new CategoryScoreDto(13L, "품질", 85.0),
-                new CategoryScoreDto(14L, "가격", 88.0)
-        );
-        
-        return new AnalysisResultScoreStatisticsResponseDto(
-                targetScores,
-                competitorAvgScores
-        );
-    }
 
     /**
      * 카테고리별 점수를 조회합니다.
@@ -270,47 +155,6 @@ public class AnalysisResultService {
                 analysisResult.getImprovements(),
                 qaDtoList
         );
-    }
-
-    /**
-     * 더미 질문/답변 데이터를 생성합니다.
-     *
-     * @return 질문/답변 DTO 리스트
-     */
-    private List<QaDto> createDummyQaList() {
-        List<QaDto> qaList = new ArrayList<>();
-
-        // 더미 QA 데이터 생성
-        CompanyInfoDto targetCompanyInfo = new CompanyInfoDto(
-                1L,
-                "삼성전자",
-                "브랜딩 전략이 경쟁사 대비 우수합니다.",
-                "브랜딩 전략이 경쟁사 대비 우수합니다. 상세 내용...",
-                Arrays.asList("반도체", "1등", "기획"),
-                Arrays.asList("최악", "사망", "주가폭락"),
-                92.0
-        );
-
-        List<CompanyInfoDto> competitorInfoList = Arrays.asList(
-                new CompanyInfoDto(
-                        2L,
-                        "애플",
-                        "혁신적인 디자인으로 유명합니다.",
-                        88.0
-                )
-        );
-
-        QaDto qa = new QaDto(
-                1L,
-                23L,
-                "우리 회사의 강점은 무엇인가요?",
-                targetCompanyInfo,
-                competitorInfoList
-        );
-
-        qaList.add(qa);
-
-        return qaList;
     }
 
     /**
