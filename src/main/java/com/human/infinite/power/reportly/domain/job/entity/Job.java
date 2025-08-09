@@ -1,6 +1,7 @@
 package com.human.infinite.power.reportly.domain.job.entity;
 
 import com.human.infinite.power.reportly.common.IdGenerator;
+import com.human.infinite.power.reportly.domain.analysisresult.entity.AnalysisResult;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,6 +34,10 @@ public class Job {
      */
     @Column(name = "analysisResultNo", nullable = false)
     private Long analysisResultNo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analysisResultNo", insertable = false, updatable = false)
+    private AnalysisResult analysisResult;
     
     /**
      * 생성 일시

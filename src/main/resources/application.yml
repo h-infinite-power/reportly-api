@@ -34,7 +34,11 @@ spring:
       com.example.testapi: DEBUG
       org.hibernate.SQL: DEBUG
       org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
+logging:
+  level:
+    org.hibernate.SQL: debug                     # 실행된 SQL
+    org.hibernate.orm.jdbc.bind: trace           # 바인딩된 파라미터(값)
+    org.hibernate.orm.jdbc.extract: trace
 # Swagger / OpenAPI Configuration
 springdoc:
   api-docs:

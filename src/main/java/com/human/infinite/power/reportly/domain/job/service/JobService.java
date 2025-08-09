@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -153,23 +154,16 @@ public class JobService {
                 .map(AnalysisResultJob::getAnalysisResultNo)
                 .collect(Collectors.toList());
         
-        List<AnalysisResult> analysisResults = analysisResultRepository.findAllById(analysisResultNos);
-        
-        // 타겟 회사 (Job의 analysisResultNo와 일치하는 것)
-        AnalysisResult targetResult = analysisResults.stream()
-                .filter(result -> result.getAnalysisResultNo().equals(job.getAnalysisResultNo()))
-                .findFirst()
-                .orElseThrow(() -> new UserException("타겟 회사 분석결과를 찾을 수 없습니다."));
-        
-        // 경쟁사들 (타겟 회사 제외)
-        List<AnalysisResult> competitorResults = analysisResults.stream()
-                .filter(result -> !result.getAnalysisResultNo().equals(job.getAnalysisResultNo()))
-                .collect(Collectors.toList());
-        
+        List<AnalysisResult> competitorResults = analysisResultRepository.findAllById(analysisResultNos);
+
+        final AnalysisResult targetResult = job.getAnalysisResult();
+        List<AnalysisResult> allAnalysisResults = competitorResults.stream().collect(Collectors.toList());
+        allAnalysisResults.add(targetResult);
+
         // 모든 회사 점수로 순위 계산
-        List<AnalysisResult> allResults = new ArrayList<>(analysisResults);
-        allResults.sort(Comparator.comparing(AnalysisResult::getCompanyIndustryTotalScore).reversed());
-        
+        List<AnalysisResult> allResults = new ArrayList<>(allAnalysisResults);
+        allResults.sort(Comparator.comparing(AnalysisResult::getCompanyIndustryTotalScore, Comparator.reverseOrder()));
+
         // 타겟 회사 순위 찾기
         int targetRank = 1;
         for (int i = 0; i < allResults.size(); i++) {
@@ -185,7 +179,7 @@ public class JobService {
                 .average()
                 .orElse(0.0);
         
-                 return new TotalScoreListResponseDto(
+         return new TotalScoreListResponseDto(
                  targetRank,
                  targetResult.getCompanyNo(),
                  targetResult.getCompanyIndustryTotalScore(),
