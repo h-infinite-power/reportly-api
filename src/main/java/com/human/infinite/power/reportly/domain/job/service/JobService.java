@@ -3,6 +3,7 @@ package com.human.infinite.power.reportly.domain.job.service;
 import com.human.infinite.power.reportly.common.dto.NoResponseDto;
 import com.human.infinite.power.reportly.common.exception.UserException;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.AnalysisResultCreateRequestDto;
+import com.human.infinite.power.reportly.domain.analysisresult.service.AnalysisResultService;
 import com.human.infinite.power.reportly.domain.job.dto.TotalScoreListResponseDto;
 import com.human.infinite.power.reportly.domain.job.dto.AnalysisResultScoreStatisticsResponseDto;
 import com.human.infinite.power.reportly.domain.job.dto.CategoryScoreDto;
@@ -28,13 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,9 +44,9 @@ public class JobService {
     private final JobRepository jobRepository;
     private final AnalysisResultRepository analysisResultRepository;
     private final AnalysisResultScoreRepository analysisResultScoreRepository;
-    private final KeywordRepository keywordRepository;
     private final AnalysisResultJobRepository analysisResultJobRepository;
     private final CategoryRepository categoryRepository;
+    private final AnalysisResultService analysisResultService;
 
     /**
      * 분석을 수행하고 작업을 생성합니다.
@@ -112,7 +107,7 @@ public class JobService {
         // 새로운 분석결과 생성
         log.info("새로운 분석결과 생성 - 회사: {}", companyNo);
         PromptResponseDto promptResponse = getPromptResponse(companyNo);
-        return saveAnalysisResultFromPrompt(companyNo, industryNo, promptResponse);
+        return analysisResultService.saveAnalysisResultFromPrompt(companyNo, industryNo, promptResponse);
     }
 
     /**
@@ -129,98 +124,6 @@ public class JobService {
 
         return analysisResultRepository
             .findByCompanyNoAndIndustryNoOrderByCreatedAtDesc(companyNo, industryNo).stream().findFirst().orElse(null);
-    }
-
-    /**
-     * 프롬프트 응답을 기반으로 분석결과를 저장합니다.
-     *
-     * @param companyNo      회사 번호
-     * @param industryNo
-     * @param promptResponse 프롬프트 응답 DTO
-     * @return 저장된 분석결과
-     */
-    @Transactional
-    public AnalysisResult saveAnalysisResultFromPrompt(Long companyNo, Long industryNo, PromptResponseDto promptResponse) {
-        LocalDate today = LocalDate.now();
-
-        // 전체 점수 계산 (카테고리별 점수의 평균)
-        double totalScore = promptResponse.getCategoryResults().stream()
-            .mapToInt(CategoryResultDto::getScore)
-            .average()
-            .orElse(0.0);
-
-        // AnalysisResult 저장
-        AnalysisResult analysisResult = new AnalysisResult(
-            companyNo,
-            industryNo,
-            today,
-            "AI가 분석한 " + promptResponse.getBrand() + " 브랜드 요약",
-            "AI가 분석한 " + promptResponse.getBrand() + " 브랜드 상세 분석 내용",
-            totalScore,
-            "AI 분석 근거 자료",
-            promptResponse.getInsightSummary().getStrengths(),
-            promptResponse.getInsightSummary().getWeaknesses(),
-            promptResponse.getInsightSummary().getRecommendations()
-        );
-
-        analysisResult = analysisResultRepository.save(analysisResult);
-
-        // AnalysisResultScore 저장
-        saveAnalysisResultScores(analysisResult.getAnalysisResultNo(), promptResponse.getCategoryResults());
-
-        // Keyword 저장
-        saveKeywords(analysisResult.getAnalysisResultNo(), promptResponse.getCategoryResults());
-
-        return analysisResult;
-    }
-
-    /**
-     * 분석결과 점수들을 저장합니다.
-     *
-     * @param analysisResultNo 분석결과 번호
-     * @param categoryResults 카테고리 결과 목록
-     */
-    @Transactional
-    public void saveAnalysisResultScores(Long analysisResultNo, List<CategoryResultDto> categoryResults) {
-        for (CategoryResultDto categoryResult : categoryResults) {
-            AnalysisResultScore score = new AnalysisResultScore(
-                analysisResultNo,
-                categoryResult.getQuestionId(), // 카테고리 번호로 사용
-                categoryResult.getScore().floatValue()
-            );
-            analysisResultScoreRepository.save(score);
-        }
-    }
-
-    /**
-     * 키워드들을 저장합니다.
-     *
-     * @param analysisResultNo 분석결과 번호
-     * @param categoryResults 카테고리 결과 목록
-     */
-    @Transactional
-    public void saveKeywords(Long analysisResultNo, List<CategoryResultDto> categoryResults) {
-        for (CategoryResultDto categoryResult : categoryResults) {
-            // 긍정 키워드 저장
-            for (String keyword : categoryResult.getPositiveKeyword()) {
-                Keyword keywordEntity = new Keyword(
-                    analysisResultNo,
-                    "POSITIVE",
-                    keyword
-                );
-                keywordRepository.save(keywordEntity);
-            }
-
-            // 부정 키워드 저장
-            for (String keyword : categoryResult.getNegativeKeyword()) {
-                Keyword keywordEntity = new Keyword(
-                    analysisResultNo,
-                    "NEGATIVE",
-                    keyword
-                );
-                keywordRepository.save(keywordEntity);
-            }
-        }
     }
 
     /**

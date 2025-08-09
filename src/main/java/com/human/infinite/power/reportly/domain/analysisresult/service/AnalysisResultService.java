@@ -12,6 +12,8 @@ import com.human.infinite.power.reportly.domain.analysisresultjob.entity.Analysi
 import com.human.infinite.power.reportly.domain.analysisresultjob.repository.AnalysisResultJobRepository;
 import com.human.infinite.power.reportly.domain.analysisresultscore.entity.AnalysisResultScore;
 import com.human.infinite.power.reportly.domain.analysisresultscore.repository.AnalysisResultScoreRepository;
+import com.human.infinite.power.reportly.domain.category.entity.Category;
+import com.human.infinite.power.reportly.domain.category.repository.CategoryRepository;
 import com.human.infinite.power.reportly.domain.competitor.entity.Competitor;
 import com.human.infinite.power.reportly.domain.competitor.repository.CompetitorRepository;
 import com.human.infinite.power.reportly.domain.job.entity.Job;
@@ -43,109 +45,9 @@ public class AnalysisResultService {
     private final CompetitorRepository competitorRepository;
     private final KeywordRepository keywordRepository;
     private final QuestionRepository questionRepository;
-    private final JobRepository jobRepository;
-    private final AnalysisResultJobRepository analysisResultJobRepository;
+    private final CategoryRepository categoryRepository;
 
-    /**
-     * 분석결과를 생성합니다.
-     * 요청한 브랜드명, 경쟁사명, 업종명을 기반으로 분석결과 데이터를 저장합니다.
-     *
-     * @param requestDto 분석결과 생성 요청 DTO
-     * @return 생성된 분석결과 번호
-     */
-    @Transactional
-    public AnalysisResultCreateResponseDto createAnalysisResult(AnalysisResultCreateRequestDto requestDto) {
-        LocalDate today = LocalDate.now();
-        
-        // 타겟 회사와 경쟁사 리스트 조합
-        List<Long> allCompanyNos = new ArrayList<>();
-        allCompanyNos.add(requestDto.getTargetCompanyNo());
-        allCompanyNos.addAll(requestDto.getCompetitorCompanyNoList());
-        
-        // 이미 분석된 결과가 있는지 확인
-        List<AnalysisResult> existingResults = analysisResultRepository
-                .findByCompanyNoInAndIndustryNoAndDate(allCompanyNos, requestDto.getIndustryNo(), today);
-        
-        Set<Long> existingCompanyNos = existingResults.stream()
-                .map(AnalysisResult::getCompanyNo)
-                .collect(Collectors.toSet());
-        
-        // 분석이 필요한 회사들 필터링
-        List<Long> newCompanyNos = allCompanyNos.stream()
-                .filter(companyNo -> !existingCompanyNos.contains(companyNo))
-                .collect(Collectors.toList());
-        
-        Long analysisResultNo = null;
-        
-        // 새로 분석이 필요한 회사가 있는 경우에만 getResult() 호출
-        if (!newCompanyNos.isEmpty()) {
-            log.info("새로운 분석이 필요한 회사: {}", newCompanyNos);
-            analysisResultNo = getResult(requestDto, newCompanyNos);
-        } else {
-            // 모든 회사가 이미 분석된 경우 타겟 회사의 분석결과 번호 반환
-            analysisResultNo = existingResults.stream()
-                    .filter(result -> result.getCompanyNo().equals(requestDto.getTargetCompanyNo()))
-                    .findFirst()
-                    .map(AnalysisResult::getAnalysisResultNo)
-                    .orElseThrow(() -> new UserException("타겟 회사의 분석결과를 찾을 수 없습니다."));
-        }
-        
-        return new AnalysisResultCreateResponseDto(analysisResultNo);
-    }
 
-    /**
-     * 실제 분석 로직을 수행하는 메서드 (현재는 더미 데이터 생성)
-     * 추후 실제 AI 분석 로직으로 대체될 예정
-     *
-     * @param requestDto 분석결과 생성 요청 DTO
-     * @param companyNos 분석할 회사 번호 리스트
-     * @return 생성된 분석결과 번호
-     */
-    @Transactional
-    public Long getResult(AnalysisResultCreateRequestDto requestDto, List<Long> companyNos) {
-        LocalDate today = LocalDate.now();
-        Long targetAnalysisResultNo = null;
-        
-        for (Long companyNo : companyNos) {
-            // 더미 분석결과 생성
-            AnalysisResult analysisResult = new AnalysisResult(
-                    companyNo,
-                    requestDto.getIndustryNo(),
-                    today,
-                    "AI가 분석한 요약 내용입니다.",
-                    "AI가 분석한 상세 내용입니다.",
-                    85.5, // 더미 종합 점수
-                    "AI 분석 근거 자료",
-                    "강점: 브랜드 인지도가 높습니다.",
-                    "약점: 가격 경쟁력이 부족합니다.",
-                    "개선사항: 마케팅 전략을 개선하세요."
-            );
-            
-            analysisResult = analysisResultRepository.save(analysisResult);
-            
-            // 타겟 회사인 경우 분석결과 번호 저장
-            if (companyNo.equals(requestDto.getTargetCompanyNo())) {
-                targetAnalysisResultNo = analysisResult.getAnalysisResultNo();
-                
-                // 경쟁사 정보 저장
-                for (Long competitorCompanyNo : requestDto.getCompetitorCompanyNoList()) {
-                    Competitor competitor = new Competitor(
-                            analysisResult.getAnalysisResultNo(),
-                            competitorCompanyNo
-                    );
-                    competitorRepository.save(competitor);
-                }
-            }
-            
-            // 더미 카테고리별 점수 생성 (예시: 5개 카테고리)
-            createDummyScores(analysisResult.getAnalysisResultNo());
-            
-            // 더미 키워드 생성
-            createDummyKeywords(analysisResult.getAnalysisResultNo());
-        }
-        
-        return targetAnalysisResultNo;
-    }
 
     /**
      * 더미 카테고리별 점수를 생성합니다.
@@ -156,7 +58,7 @@ public class AnalysisResultService {
     public void createDummyScores(Long analysisResultNo) {
         Random random = new Random();
         Long[] categoryNos = {10L, 11L, 12L, 13L, 14L}; // 더미 카테고리 번호들
-        
+
         for (Long categoryNo : categoryNos) {
             AnalysisResultScore score = new AnalysisResultScore(
                     analysisResultNo,
@@ -176,7 +78,7 @@ public class AnalysisResultService {
     public void createDummyKeywords(Long analysisResultNo) {
         String[] positiveKeywords = {"품질", "혁신", "신뢰", "브랜드", "서비스"};
         String[] negativeKeywords = {"가격", "접근성", "속도", "복잡", "불편"};
-        
+
         // 긍정 키워드 저장
         for (String keyword : positiveKeywords) {
             Keyword keywordEntity = new Keyword(
@@ -186,7 +88,7 @@ public class AnalysisResultService {
             );
             keywordRepository.save(keywordEntity);
         }
-        
+
         // 부정 키워드 저장
         for (String keyword : negativeKeywords) {
             Keyword keywordEntity = new Keyword(
@@ -209,7 +111,7 @@ public class AnalysisResultService {
         // 현재는 더미 데이터 반환
         return new TotalScoreListResponseDto(
                 1,        // targetRank
-                101L,     // targetCompanyNo  
+                101L,     // targetCompanyNo
                 87.0,     // targetTotalScore
                 76.0,     // competitorAvgTotalScore
                 4         // totalCompanyCount
@@ -377,7 +279,7 @@ public class AnalysisResultService {
      */
     private List<QaDto> createDummyQaList() {
         List<QaDto> qaList = new ArrayList<>();
-        
+
         // 더미 QA 데이터 생성
         CompanyInfoDto targetCompanyInfo = new CompanyInfoDto(
                 1L,
@@ -388,7 +290,7 @@ public class AnalysisResultService {
                 Arrays.asList("최악", "사망", "주가폭락"),
                 92.0
         );
-        
+
         List<CompanyInfoDto> competitorInfoList = Arrays.asList(
                 new CompanyInfoDto(
                         2L,
@@ -397,7 +299,7 @@ public class AnalysisResultService {
                         88.0
                 )
         );
-        
+
         QaDto qa = new QaDto(
                 1L,
                 23L,
@@ -405,109 +307,107 @@ public class AnalysisResultService {
                 targetCompanyInfo,
                 competitorInfoList
         );
-        
+
         qaList.add(qa);
-        
+
         return qaList;
     }
 
     /**
-     * AI 프롬프트 응답을 기반으로 분석결과를 저장합니다.
-     * 테스트용 메서드로, JSON 데이터를 실제 데이터베이스에 저장합니다.
+     * 프롬프트 응답을 기반으로 분석결과를 저장합니다.
      *
-     * @param companyNo 회사 번호
-     * @param industryNo 업종 번호  
-     * @param promptResponse AI 프롬프트 응답 DTO
+     * @param companyNo      회사 번호
+     * @param industryNo
+     * @param promptResponse 프롬프트 응답 DTO
+     * @return 저장된 분석결과
      */
     @Transactional
-    public void saveAnalysisResultFromPrompt(Long companyNo, Long industryNo, PromptResponseDto promptResponse) {
-        log.info("AI 프롬프트 응답 기반 분석결과 저장 시작 - 회사: {}, 업종: {}, 브랜드: {}", 
-                companyNo, industryNo, promptResponse.getBrand());
-        
+    public AnalysisResult saveAnalysisResultFromPrompt(Long companyNo, Long industryNo, PromptResponseDto promptResponse) {
         LocalDate today = LocalDate.now();
-        
-        // 인사이트 요약 정보 생성
-        InsightSummaryDto insightSummary = promptResponse.getInsightSummary();
-        
-        // 분석결과 엔티티 생성
+
+        // 전체 점수 계산 (카테고리별 점수의 평균)
+        double totalScore = promptResponse.getCategoryResults().stream()
+            .mapToInt(CategoryResultDto::getScore)
+            .average()
+            .orElse(0.0);
+
+        // AnalysisResult 저장
         AnalysisResult analysisResult = new AnalysisResult(
-                companyNo,
-                industryNo,
-                today,
-                "AI 프롬프트 기반 분석: " + promptResponse.getBrand(),
-                insightSummary.getStrengths() + " " + insightSummary.getWeaknesses(),
-                calculateOverallScore(promptResponse.getCategoryResults()),
-                "AI 프롬프트 응답 데이터 기반",
-                insightSummary.getStrengths(),
-                insightSummary.getWeaknesses(),
-                insightSummary.getRecommendations()
+            companyNo,
+            industryNo,
+            today,
+            "AI가 분석한 " + promptResponse.getBrand() + " 브랜드 요약",
+            "AI가 분석한 " + promptResponse.getBrand() + " 브랜드 상세 분석 내용",
+            totalScore,
+            "AI 분석 근거 자료",
+            promptResponse.getInsightSummary().getStrengths(),
+            promptResponse.getInsightSummary().getWeaknesses(),
+            promptResponse.getInsightSummary().getRecommendations()
         );
-        
+
         analysisResult = analysisResultRepository.save(analysisResult);
-        log.info("분석결과 저장 완료 - analysisResultNo: {}", analysisResult.getAnalysisResultNo());
-        
-        // 카테고리별 점수 저장
-        for (CategoryResultDto categoryResult : promptResponse.getCategoryResults()) {
-            AnalysisResultScore score = new AnalysisResultScore(
-                    analysisResult.getAnalysisResultNo(),
-                    categoryResult.getQuestionId(), // questionId를 categoryNo로 사용
-                    categoryResult.getScore().floatValue()
-            );
-            analysisResultScoreRepository.save(score);
-            
-            // 긍정/부정 키워드 저장
-            saveKeywords(analysisResult.getAnalysisResultNo(), categoryResult);
-        }
-        
-        log.info("AI 프롬프트 응답 기반 분석결과 저장 완료");
+
+        // AnalysisResultScore 저장
+        saveAnalysisResultScores(analysisResult.getAnalysisResultNo(), promptResponse.getCategoryResults());
+
+        // Keyword 저장
+        saveKeywords(analysisResult.getAnalysisResultNo(), promptResponse.getCategoryResults());
+
+        return analysisResult;
     }
-    
+
     /**
-     * 카테고리 결과 리스트에서 전체 평균 점수를 계산합니다.
-     *
-     * @param categoryResults 카테고리 결과 리스트
-     * @return 전체 평균 점수
-     */
-    private Double calculateOverallScore(List<CategoryResultDto> categoryResults) {
-        if (categoryResults == null || categoryResults.isEmpty()) {
-            return 0.0;
-        }
-        
-        return categoryResults.stream()
-                .mapToDouble(CategoryResultDto::getScore)
-                .average()
-                .orElse(0.0);
-    }
-    
-    /**
-     * 카테고리 결과의 긍정/부정 키워드를 저장합니다.
+     * 분석결과 점수들을 저장합니다.
      *
      * @param analysisResultNo 분석결과 번호
-     * @param categoryResult 카테고리 결과
+     * @param categoryResults 카테고리 결과 목록
      */
-    private void saveKeywords(Long analysisResultNo, CategoryResultDto categoryResult) {
-        // 긍정 키워드 저장
-        if (categoryResult.getPositiveKeyword() != null) {
+    @Transactional
+    public void saveAnalysisResultScores(Long analysisResultNo, List<CategoryResultDto> categoryResults) {
+
+        Map<String, Long> categoryNameMap = categoryRepository.findAll().stream().collect(Collectors.toMap(Category::getCategoryName, Category::getCategoryNo));
+
+        for (CategoryResultDto categoryResult : categoryResults) {
+            Long categoryNo = Optional.ofNullable(categoryNameMap.get(categoryResult.getCategory()))
+                .orElseThrow(() -> new RuntimeException("AI가 잘못된 카테고리명 응답을 줬습니다. 프롬프트를 수정해 주세요. \n존재하지 않는 카테고리명 : " + categoryResult.getCategory()));
+            AnalysisResultScore score = new AnalysisResultScore(
+                analysisResultNo,
+                categoryNo,
+                categoryResult.getScore().floatValue()
+            );
+            analysisResultScoreRepository.save(score);
+        }
+    }
+
+    /**
+     * 키워드들을 저장합니다.
+     *
+     * @param analysisResultNo 분석결과 번호
+     * @param categoryResults 카테고리 결과 목록
+     */
+    @Transactional
+    public void saveKeywords(Long analysisResultNo, List<CategoryResultDto> categoryResults) {
+        for (CategoryResultDto categoryResult : categoryResults) {
+            // 긍정 키워드 저장
             for (String keyword : categoryResult.getPositiveKeyword()) {
                 Keyword keywordEntity = new Keyword(
-                        analysisResultNo,
-                        "POSITIVE",
-                        keyword
+                    analysisResultNo,
+                    "POSITIVE",
+                    keyword
                 );
                 keywordRepository.save(keywordEntity);
             }
-        }
-        
-        // 부정 키워드 저장
-        if (categoryResult.getNegativeKeyword() != null) {
+
+            // 부정 키워드 저장
             for (String keyword : categoryResult.getNegativeKeyword()) {
                 Keyword keywordEntity = new Keyword(
-                        analysisResultNo,
-                        "NEGATIVE",
-                        keyword
+                    analysisResultNo,
+                    "NEGATIVE",
+                    keyword
                 );
                 keywordRepository.save(keywordEntity);
             }
         }
     }
+
 }
