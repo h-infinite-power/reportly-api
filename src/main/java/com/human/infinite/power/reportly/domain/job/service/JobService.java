@@ -207,6 +207,7 @@ public class JobService {
          List<Long> analysisResultNos = analysisResultJobs.stream()
                  .map(AnalysisResultJob::getAnalysisResultNo)
                  .collect(Collectors.toList());
+         analysisResultNos.add(job.getAnalysisResultNo());
          
          // 모든 점수와 카테고리 정보 한 번에 조회
          List<AnalysisResultScore> allScores = analysisResultScoreRepository.findAllByAnalysisResultNoIn(analysisResultNos);
