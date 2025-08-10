@@ -185,15 +185,16 @@
         			    {
         			    	"questionNo" : "1",
         				    "categoryNo" : "23",
-        			      "question": "우리 회사의 강점은 무엇인가요?",
+                            "categoryName" : "브랜딩",
+        			        "question": "우리 회사의 강점은 무엇인가요?",
         				    "targetCompanyInfo" : {
         				    		"comnpanyNo": "1",
-        							  "companyName": "삼성전자",
+        							"companyName": "삼성전자",
         						    "summary": "요약", 
-        					      "content": "브랜딩 전략이 경쟁사 대비 우수합니다.",
-        					      "positiveKeyword" : ["반도체", "1등", "기획"],
-        					      "negativeKeyword" : ["최악", "사망", "주가폭락"],
-        					      "companyCategoryScore" : 92,
+        					        "content": "브랜딩 전략이 경쟁사 대비 우수합니다.",
+        					        "positiveKeyword" : ["반도체", "1등", "기획"],
+        					        "negativeKeyword" : ["최악", "사망", "주가폭락"],
+        					        "companyCategoryScore" : 92,
         					   }, 
         					   "competitorCompanyInfo" : 
         					   [
