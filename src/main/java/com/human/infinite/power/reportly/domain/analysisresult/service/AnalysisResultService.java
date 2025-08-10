@@ -16,6 +16,7 @@ import com.human.infinite.power.reportly.domain.question.entity.Question;
 import com.human.infinite.power.reportly.domain.question.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -181,8 +182,8 @@ public class AnalysisResultService {
             companyNo,
             industryNo,
             today,
-            "AI가 분석한 " + promptResponse.getBrand() + " 브랜드 요약",
-            "AI가 분석한 " + promptResponse.getBrand() + " 브랜드 상세 분석 내용",
+            "AI가 분석한 " + promptResponse.getBrand() + " 브랜드 요약 - 현재 미사용중인 컬럼",
+            "AI가 분석한 " + promptResponse.getBrand() + " 브랜드 상세 분석 내용 - 현재 미사용중인 컬럼",
             totalScore,
             "AI 분석 근거 자료",
             promptResponse.getInsightSummary().getStrengths(),
@@ -218,7 +219,9 @@ public class AnalysisResultService {
             AnalysisResultScore score = new AnalysisResultScore(
                 analysisResultNo,
                 categoryNo,
-                categoryResult.getScore().floatValue()
+                categoryResult.getScore().floatValue(),
+                categoryResult.getSummary(),
+                categoryResult.getAnswer()
             );
             analysisResultScoreRepository.save(score);
         }

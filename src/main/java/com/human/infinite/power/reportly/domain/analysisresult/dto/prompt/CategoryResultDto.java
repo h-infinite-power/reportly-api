@@ -24,7 +24,12 @@ public class CategoryResultDto {
      * 카테고리명
      */
     private String category;
-    
+
+    /**
+     * 답변 요약 내용
+     */
+    private String summary;
+
     /**
      * 답변 내용
      */

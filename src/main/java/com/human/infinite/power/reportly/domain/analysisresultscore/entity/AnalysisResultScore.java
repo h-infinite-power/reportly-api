@@ -47,6 +47,12 @@ public class AnalysisResultScore {
      */
     @Column(name = "categoryScore", nullable = false)
     private Float categoryScore;
+
+    @Column(name = "summary", nullable = false)
+    private String summary;
+
+    @Column(name = "content", nullable = false)
+    private String content;
     
     /**
      * 생성 일시
@@ -89,11 +95,13 @@ public class AnalysisResultScore {
      * @param categoryNo 카테고리 번호
      * @param categoryScore 카테고리별 점수
      */
-    public AnalysisResultScore(Long analysisResultNo, Long categoryNo, Float categoryScore) {
+    public AnalysisResultScore(Long analysisResultNo, Long categoryNo, Float categoryScore, String summary, String answer) {
         this.analysisResultScoreNo = IdGenerator.generateId();
         this.analysisResultNo = analysisResultNo;
         this.categoryNo = categoryNo;
         this.categoryScore = categoryScore;
+        this.summary = summary;
+        this.content = answer;
     }
     
     /**
