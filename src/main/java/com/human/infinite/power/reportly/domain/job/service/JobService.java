@@ -259,19 +259,19 @@ public class JobService {
     private PromptResponseDto getPromptResponse(Long companyNo) {
         // 더미 카테고리 결과 생성 (7개 질문)
         List<CategoryResultDto> categoryResults = Arrays.asList(
-            new CategoryResultDto(10L, "인지도", "이 브랜드는 다양한 디지털 채널과 대중 매체를 통해 강력한 인지도를 확보하고 있으며...",
+            new CategoryResultDto(10L, "인지도", "", "이 브랜드는 다양한 디지털 채널과 대중 매체를 통해 강력한 인지도를 확보하고 있으며...",
                                   Arrays.asList("광고 노출", "앱 다운로드", "검색 유입"), Arrays.asList("브랜드 혼동", "세대별 편차", "해외 인지도 낮음"), 82, 0.91, "광고 노출과 앱 다운로드 수가 경쟁사 대비 높고, 리뷰 수에서도 강세를 보임."),
-            new CategoryResultDto(11L, "브랜딩", "브랜드 아이덴티티가 명확하고 일관성 있는 메시지를 전달하고 있습니다.",
+            new CategoryResultDto(11L, "브랜딩", "","브랜드 아이덴티티가 명확하고 일관성 있는 메시지를 전달하고 있습니다.",
                                   Arrays.asList("브랜드파워", "일관성", "차별화"), Arrays.asList("복잡성", "이해도부족"), 85, 0.88, "브랜드 조사 결과"),
-            new CategoryResultDto(12L, "마케팅", "디지털 마케팅 전략이 효과적이며 타겟 고객에게 잘 도달하고 있습니다.",
+            new CategoryResultDto(12L, "마케팅", "","디지털 마케팅 전략이 효과적이며 타겟 고객에게 잘 도달하고 있습니다.",
                                   Arrays.asList("디지털전략", "타겟팅", "효과적"), Arrays.asList("비용", "ROI저조"), 78, 0.86, "마케팅 성과 데이터"),
-            new CategoryResultDto(13L, "서비스", "고객 서비스 품질이 우수하며 만족도가 높습니다.",
+            new CategoryResultDto(13L, "서비스", "","고객 서비스 품질이 우수하며 만족도가 높습니다.",
                                   Arrays.asList("품질", "만족도", "응답속도"), Arrays.asList("대기시간", "복잡함"), 80, 0.90, "고객 만족도 조사"),
-            new CategoryResultDto(14L, "품질", "제품 품질이 경쟁사 대비 우수하며 지속적인 개선이 이루어지고 있습니다.",
+            new CategoryResultDto(14L, "품질", "","제품 품질이 경쟁사 대비 우수하며 지속적인 개선이 이루어지고 있습니다.",
                                   Arrays.asList("우수성", "개선", "안정성"), Arrays.asList("가격대비", "일부결함"), 88, 0.95, "품질 평가 보고서"),
-            new CategoryResultDto(15L, "가격", "가격 경쟁력은 다소 부족하지만 프리미엄 포지셔닝으로 차별화하고 있습니다.",
+            new CategoryResultDto(15L, "가격", "","가격 경쟁력은 다소 부족하지만 프리미엄 포지셔닝으로 차별화하고 있습니다.",
                                   Arrays.asList("프리미엄", "차별화"), Arrays.asList("비싼가격", "경쟁력부족", "부담"), 72, 0.85, "가격 비교 분석"),
-            new CategoryResultDto(16L, "혁신", "지속적인 기술 혁신과 신제품 개발로 시장을 선도하고 있습니다.",
+            new CategoryResultDto(16L, "혁신", "","지속적인 기술 혁신과 신제품 개발로 시장을 선도하고 있습니다.",
                                   Arrays.asList("기술혁신", "신제품", "선도"), Arrays.asList("속도느림", "보수적"), 90, 0.93, "혁신 성과 평가")
         );
 
