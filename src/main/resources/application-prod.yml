@@ -5,10 +5,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+    naming:
+      physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: false
     properties:
       hibernate:
-        format_sql: false
+        format_sql: true
+        globally_quoted_identifiers: true
 
 # Actuator 설정
 management:
