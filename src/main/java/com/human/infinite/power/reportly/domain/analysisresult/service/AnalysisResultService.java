@@ -16,7 +16,7 @@ import com.human.infinite.power.reportly.domain.question.entity.Question;
 import com.human.infinite.power.reportly.domain.question.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,14 +110,21 @@ public class AnalysisResultService {
             // 5-1) 타겟 회사 카테고리 점수 조회
             AnalysisResultScore targetScoreEntity = analysisResultScoreRepository
                     .findFirstByAnalysisResultNoAndCategoryNo(analysisResultNo, categoryNo);
-            Double targetCategoryScore = targetScoreEntity != null ? targetScoreEntity.getCategoryScore().doubleValue() : null;
+            
+            if (targetScoreEntity == null) {
+                continue; // 해당 카테고리에 점수가 없으면 QA 생략
+            }
+            
+            Double targetCategoryScore = targetScoreEntity.getCategoryScore().doubleValue();
+            String targetSummary = targetScoreEntity.getSummary();
+            String targetContent = targetScoreEntity.getContent();
 
             // 5-2) 타겟 회사 정보 DTO
             CompanyInfoDto targetCompanyInfo = new CompanyInfoDto(
                     targetCompanyNo,
                     analysisResult.getCompany().getCompanyName(),
-                    analysisResult.getSummary(),
-                    analysisResult.getContent(),
+                    targetSummary,
+                    targetContent,
                     positiveKeywords,
                     negativeKeywords,
                     targetCategoryScore
@@ -128,14 +135,19 @@ public class AnalysisResultService {
                     .map(cr -> {
                         AnalysisResultScore compScore = analysisResultScoreRepository
                                 .findFirstByAnalysisResultNoAndCategoryNo(cr.getAnalysisResultNo(), categoryNo);
-                        Double compCatScore = compScore != null ? compScore.getCategoryScore().doubleValue() : null;
+                        if (compScore == null) {
+                            return null; // 해당 카테고리에 점수가 없는 경쟁사는 제외
+                        }
+                        Double compCatScore = compScore.getCategoryScore().doubleValue();
+                        String compSummary = compScore.getSummary();
                         return new CompanyInfoDto(
                                 cr.getCompanyNo(),
                                 cr.getCompany().getCompanyName(),
-                                cr.getSummary(),
+                                compSummary,
                                 compCatScore
                         );
                     })
+                    .filter(java.util.Objects::nonNull) // null 제거
                     .collect(Collectors.toList());
 
             // 5-4) QA DTO 생성
