@@ -141,6 +141,7 @@ public class AnalysisResultService {
             QaDto qaDto = new QaDto(
                     question.getQuestionNo(),
                     categoryNo,
+                    question.getCategory().getCategoryName(),
                     question.getQuestion(),
                     targetCompanyInfo,
                     competitorInfoList
