@@ -1,0 +1,209 @@
+name: Deploy reportly-api
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      APP_NAME: reportly-api
+      APP_PORT: 8080
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      # 원격 디렉터리 준비 (없으면 생성)
+      - name: Prepare remote folders
+        uses: appleboy/ssh-action@v1
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          envs: APP_NAME
+          script: |
+            bash -lc '
+              set -Eeuo pipefail
+              APP_BASE="/home/${{ secrets.SERVER_USER }}/app/${APP_NAME}"
+              BUILD_DIR="$APP_BASE/build"
+              LOG_DIR="$APP_BASE/log"
+              mkdir -p "$BUILD_DIR" "$LOG_DIR"
+              echo "Prepared: $BUILD_DIR and $LOG_DIR"
+            '
+
+      # JAR 업로드: build/libs 경로를 잘라서 reportly-api/build 바로 아래에 두기
+      - name: Upload JARs to server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "build/libs/*.jar"
+          target: "/home/${{ secrets.SERVER_USER }}/app/${{ env.APP_NAME }}/build/"
+          strip_components: 2
+          overwrite: true
+
+      # 기존 프로세스 정지 (해당 경로의 reportly-api.jar만)
+      - name: Stop existing app (if any)
+        uses: appleboy/ssh-action@v1
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          envs: APP_NAME
+          command_timeout: 10m
+          script: |
+            bash -lc '
+              set -Eeuo pipefail
+              APP_BASE="/home/${{ secrets.SERVER_USER }}/app/${APP_NAME}"
+              BUILD_DIR="$APP_BASE/build"
+              JAR_NAME="${APP_NAME}.jar"
+              TARGET_JAR="$BUILD_DIR/$JAR_NAME"
+
+              PIDS="$(pgrep -f "java .*${TARGET_JAR}" || true)"
+              if [ -z "$PIDS" ]; then
+                echo "실행 중인 프로세스 없음."
+                exit 0
+              fi
+
+              echo "기존 프로세스 종료..."
+              kill $PIDS || true
+              for i in $(seq 1 15); do pgrep -f "java .*${TARGET_JAR}" >/dev/null || break; sleep 1; done
+              pgrep -f "java .*${TARGET_JAR}" >/dev/null && { echo "SIGKILL..."; kill -9 $PIDS || true; }
+              echo "정지 완료"
+            '
+
+      # 시작 + 내부 연결 확인(127.0.0.1:8080)
+      - name: Start app and port healthcheck (127.0.0.1:8080)
+        uses: appleboy/ssh-action@v1
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          APP_PORT: ${{ env.APP_PORT }}
+          DB_CONFIG_JSON: ${{ secrets.DB_CONFIG_JSON }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          envs: APP_NAME,APP_PORT,DB_CONFIG_JSON
+          command_timeout: 20m
+          script: |
+            bash -lc '
+              set -Eeuo pipefail
+              APP_BASE="/home/${{ secrets.SERVER_USER }}/app/${APP_NAME}"
+              BUILD_DIR="$APP_BASE/build"
+              LOG_DIR="$APP_BASE/log"
+              JAR_NAME="${APP_NAME}.jar"
+              TARGET_JAR="$BUILD_DIR/$JAR_NAME"
+              LOG_FILE="$LOG_DIR/app.log"
+
+              mkdir -p "$BUILD_DIR" "$LOG_DIR"
+
+              echo "== build 디렉터리 =="
+              ls -lh "$BUILD_DIR" || true
+              echo "== JAR 목록 (build/) =="
+              ls -lh "$BUILD_DIR"/*.jar || true
+
+              # 최신 JAR 중 -plain 제외
+              CANDIDATE="$(ls -t "$BUILD_DIR"/*.jar 2>/dev/null | grep -v -- "-plain\.jar$" | head -n1 || true)"
+              if [ -z "$CANDIDATE" ]; then
+                echo "❌ 실행가능 JAR(bootJar)을 찾지 못했습니다. 업로드 위치를 확인하세요."
+                exit 1
+              fi
+
+              # 같은 이름의 디렉터리가 있으면 제거(예전 충돌 방지)
+              if [ -d "$TARGET_JAR" ]; then
+                echo "⚠️ $TARGET_JAR 가 디렉터리입니다. 제거합니다."
+                rm -rf "$TARGET_JAR"
+              fi
+
+              # 무결성/실행가능 점검
+              if ! file "$CANDIDATE" | grep -qi "zip archive"; then
+                echo "❌ 손상 의심 JAR: $(file "$CANDIDATE")"
+                exit 1
+              fi
+              if command -v jar >/dev/null 2>&1; then
+                jar tf "$CANDIDATE" | grep -q "^BOOT-INF/" || { echo "❌ BOOT-INF 미검출 → plain JAR"; exit 1; }
+              elif command -v unzip >/dev/null 2>&1; then
+                unzip -l "$CANDIDATE" | grep -q "BOOT-INF/" || { echo "❌ BOOT-INF 미검출 → plain JAR"; exit 1; }
+              else
+                echo "⚠️ jar/unzip 없음. 무결성 최소 확인만 진행합니다."
+              fi
+
+              cp -f "$CANDIDATE" "$TARGET_JAR"
+
+              echo "애플리케이션 시작..."
+              nohup java -jar "$TARGET_JAR" --spring.profiles.active=prod > "$LOG_FILE" 2>&1 &
+
+              echo "포트 오픈 대기..."
+              for i in $(seq 1 30); do
+                ss -ltn 2>/dev/null | awk "{print \$4}" | grep -q ":${APP_PORT}$" && break
+                if command -v netstat >/dev/null 2>&1 && netstat -ltn 2>/dev/null | awk "{print \$4}" | grep -q ":${APP_PORT}$"; then
+                  break
+                fi
+                sleep 2
+              done
+
+              # 127.0.0.1:${APP_PORT} 연결만 확인(응답코드 무관)
+              echo "127.0.0.1:${APP_PORT} 연결 확인..."
+              ok=""
+              for i in $(seq 1 20); do
+                if curl -s -m 2 -o /dev/null "http://127.0.0.1:${APP_PORT}"; then
+                  ok=1; break
+                fi
+                sleep 2
+              done
+
+              if [ -z "$ok" ]; then
+                echo "❌ 127.0.0.1:${APP_PORT} 연결 실패. 최근 로그:"
+                tail -n 200 "$LOG_FILE" || true
+                exit 1
+              fi
+
+              echo "✅ 포트 ${APP_PORT} 연결 OK (로그: $LOG_FILE)"
+            '
+
+      # 실패 시 서버 로그 출력
+      - name: Print server logs on failure
+        if: failure()
+        uses: appleboy/ssh-action@v1
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          envs: APP_NAME
+          script: |
+            bash -lc '
+              APP_BASE="/home/${{ secrets.SERVER_USER }}/app/${APP_NAME}"
+              BUILD_DIR="$APP_BASE/build"
+              LOG_DIR="$APP_BASE/log"
+              LOG_FILE="$LOG_DIR/app.log"
+              echo "== build 디렉터리 =="
+              ls -lh "$BUILD_DIR" || true
+              echo "== JARs (build/) =="
+              ls -lh "$BUILD_DIR"/*.jar || true
+              echo "== file =="
+              file "$BUILD_DIR"/*.jar || true
+              echo "== tail log =="
+              tail -n 400 "$LOG_FILE" || echo "log file not found"
+            '
