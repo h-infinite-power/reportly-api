@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JSON 파일을 읽어와서 PromptResponseDto로 역직렬화하고 데이터 저장을 테스트합니다.
  */
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("local")
 @Transactional
 class AnalysisResultServiceTest {
 
