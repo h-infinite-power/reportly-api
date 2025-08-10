@@ -140,10 +140,12 @@ public class AnalysisResultService {
                         }
                         Double compCatScore = compScore.getCategoryScore().doubleValue();
                         String compSummary = compScore.getSummary();
+                        String content = compScore.getContent();
                         return new CompanyInfoDto(
                                 cr.getCompanyNo(),
                                 cr.getCompany().getCompanyName(),
                                 compSummary,
+                                content,
                                 compCatScore
                         );
                     })

@@ -88,7 +88,15 @@ public class CompanyInfoDto {
         this.negativeKeyword = negativeKeyword;
         this.companyCategoryScore = companyCategoryScore;
     }
-    
+
+    public CompanyInfoDto(Long companyNo, String companyName, String compSummary, String content, Double compCatScore) {
+        this.companyNo = companyNo;
+        this.companyName = companyName;
+        this.summary = compSummary;
+        this.content = content;
+        this.companyCategoryScore = compCatScore;
+    }
+
     // Getter and Setter
     public Long getCompanyNo() {
         return companyNo;
