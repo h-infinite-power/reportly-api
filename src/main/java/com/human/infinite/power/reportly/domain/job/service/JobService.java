@@ -6,6 +6,7 @@ import com.human.infinite.power.reportly.domain.analysisresult.dto.AnalysisResul
 import com.human.infinite.power.reportly.domain.analysisresult.service.AnalysisResultService;
 import com.human.infinite.power.reportly.domain.job.dto.TotalScoreListResponseDto;
 import com.human.infinite.power.reportly.domain.job.dto.AnalysisResultScoreStatisticsResponseDto;
+import com.human.infinite.power.reportly.domain.job.dto.AnalysisResultInfoResponseDto;
 import com.human.infinite.power.reportly.domain.job.dto.CategoryScoreDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.CategoryResultDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.prompt.InsightSummaryDto;
@@ -18,18 +19,14 @@ import com.human.infinite.power.reportly.domain.analysisresultscore.entity.Analy
 import com.human.infinite.power.reportly.domain.analysisresultscore.repository.AnalysisResultScoreRepository;
 import com.human.infinite.power.reportly.domain.category.entity.Category;
 import com.human.infinite.power.reportly.domain.category.repository.CategoryRepository;
-import com.human.infinite.power.reportly.domain.competitor.repository.CompetitorRepository;
 import com.human.infinite.power.reportly.domain.job.entity.Job;
 import com.human.infinite.power.reportly.domain.job.repository.JobRepository;
-import com.human.infinite.power.reportly.domain.keyword.entity.Keyword;
-import com.human.infinite.power.reportly.domain.keyword.repository.KeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -285,6 +282,73 @@ public class JobService {
         );
 
         return new PromptResponseDto("Company" + companyNo, categoryResults, insightSummary);
+    }
+
+    /**
+     * 분석결과 정보 목록을 조회합니다.
+     * 카테고리별 점수의 select box를 위한 회사명, analysisResultNo 목록을 반환합니다.
+     * 
+     * @param jobNo 작업 번호
+     * @return 분석결과 정보 목록
+     */
+    public List<AnalysisResultInfoResponseDto> getAnalysisResultsInfo(Long jobNo) {
+        // 1) Job 존재 여부 확인
+        Job job = jobRepository.findById(jobNo)
+                .orElseThrow(() -> new UserException("분석결과 정보를 찾을 수 없습니다."));
+        
+        List<AnalysisResultInfoResponseDto> resultList = new ArrayList<>();
+        
+        // 2) 타겟 회사 정보 조회 (Job 테이블의 analysisResultNo)
+        Long targetAnalysisResultNo = job.getAnalysisResultNo();
+        AnalysisResult targetAnalysisResult = analysisResultRepository
+                .findByAnalysisResultNoWithCompanyAndIndustry(targetAnalysisResultNo)
+                .orElseThrow(() -> new UserException("타겟 회사 분석결과 정보를 찾을 수 없습니다."));
+        
+        // 타겟 회사 DTO 생성
+        AnalysisResultInfoResponseDto targetDto = new AnalysisResultInfoResponseDto(
+                targetAnalysisResult.getCompanyNo(),
+                targetAnalysisResult.getCompany().getCompanyName(),
+                targetAnalysisResultNo,
+                "Y" // 타겟 회사
+        );
+        resultList.add(targetDto);
+        
+        // 3) 경쟁 회사들 정보 조회 (AnalysisResultJob 테이블의 analysisResultNo들)
+        List<AnalysisResultJob> analysisResultJobs = analysisResultJobRepository.findByJobNo(jobNo);
+        
+        for (AnalysisResultJob arJob : analysisResultJobs) {
+            Long competitorAnalysisResultNo = arJob.getAnalysisResultNo();
+            
+            // 타겟 회사와 동일한 analysisResultNo는 제외
+            if (!competitorAnalysisResultNo.equals(targetAnalysisResultNo)) {
+                AnalysisResult competitorAnalysisResult = analysisResultRepository
+                        .findByAnalysisResultNoWithCompanyAndIndustry(competitorAnalysisResultNo)
+                        .orElse(null);
+                
+                if (competitorAnalysisResult != null) {
+                    AnalysisResultInfoResponseDto competitorDto = new AnalysisResultInfoResponseDto(
+                            competitorAnalysisResult.getCompanyNo(),
+                            competitorAnalysisResult.getCompany().getCompanyName(),
+                            competitorAnalysisResultNo,
+                            "N" // 경쟁 회사
+                    );
+                    resultList.add(competitorDto);
+                }
+            }
+        }
+        
+        // 4) 타겟 회사가 맨 앞에 오도록 정렬 (이미 타겟 회사를 먼저 추가했지만 명시적으로 정렬)
+        resultList.sort((a, b) -> {
+            if ("Y".equals(a.getTargetCompanyYn()) && "N".equals(b.getTargetCompanyYn())) {
+                return -1;
+            } else if ("N".equals(a.getTargetCompanyYn()) && "Y".equals(b.getTargetCompanyYn())) {
+                return 1;
+            } else {
+                return a.getCompanyName().compareTo(b.getCompanyName());
+            }
+        });
+        
+        return resultList;
     }
 
 }

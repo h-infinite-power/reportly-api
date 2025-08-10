@@ -4,6 +4,7 @@ import com.human.infinite.power.reportly.common.dto.NoResponseDto;
 import com.human.infinite.power.reportly.domain.analysisresult.dto.AnalysisResultCreateRequestDto;
 import com.human.infinite.power.reportly.domain.job.dto.TotalScoreListResponseDto;
 import com.human.infinite.power.reportly.domain.job.dto.AnalysisResultScoreStatisticsResponseDto;
+import com.human.infinite.power.reportly.domain.job.dto.AnalysisResultInfoResponseDto;
 import com.human.infinite.power.reportly.domain.job.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/reportly-api/jobs")
@@ -59,6 +62,19 @@ public class JobController {
     @GetMapping("/{jobNo}/analysis-result-score-statistics")
     public ResponseEntity<AnalysisResultScoreStatisticsResponseDto> getAnalysisResultScoreStatistics(@PathVariable("jobNo") Long jobNo) {
         AnalysisResultScoreStatisticsResponseDto response = jobService.getAnalysisResultScoreStatistics(jobNo);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 분석결과 정보 목록을 조회합니다.
+     * 카테고리별 점수의 select box를 위한 회사명, analysisResultNo 목록을 반환합니다.
+     *
+     * @param jobNo 작업 번호
+     * @return 분석결과 정보 목록
+     */
+    @GetMapping("/{jobNo}/analysisResults/info")
+    public ResponseEntity<List<AnalysisResultInfoResponseDto>> getAnalysisResultsInfo(@PathVariable("jobNo") Long jobNo) {
+        List<AnalysisResultInfoResponseDto> response = jobService.getAnalysisResultsInfo(jobNo);
         return ResponseEntity.ok(response);
     }
 }
